@@ -222,11 +222,7 @@ class OneFormerProcessingTest(unittest.TestCase):
             self.assertIsInstance(image, Image.Image)
 
         # Test not batched input
-        encoded_images = processor(
-            image_inputs[0],
-            task_inputs=["semantic"],
-            return_tensors="pt",
-        ).pixel_values
+        encoded_images = processor(image_inputs[0], ["semantic"], return_tensors="pt").pixel_values
 
         expected_height, expected_width, expected_sequence_length = self.processing_tester.get_expected_values(
             image_inputs
@@ -237,11 +233,7 @@ class OneFormerProcessingTest(unittest.TestCase):
             (1, self.processing_tester.num_channels, expected_height, expected_width),
         )
 
-        tokenized_task_inputs = processor(
-            image_inputs[0],
-            task_inputs=["semantic"],
-            return_tensors="pt",
-        ).task_inputs
+        tokenized_task_inputs = processor(image_inputs[0], ["semantic"], return_tensors="pt").task_inputs
 
         self.assertEqual(
             tokenized_task_inputs.shape,
@@ -253,11 +245,7 @@ class OneFormerProcessingTest(unittest.TestCase):
             image_inputs, batched=True
         )
 
-        encoded_images = processor(
-            image_inputs,
-            task_inputs=["semantic"] * len(image_inputs),
-            return_tensors="pt",
-        ).pixel_values
+        encoded_images = processor(image_inputs, ["semantic"] * len(image_inputs), return_tensors="pt").pixel_values
         self.assertEqual(
             encoded_images.shape,
             (
@@ -269,7 +257,7 @@ class OneFormerProcessingTest(unittest.TestCase):
         )
 
         tokenized_task_inputs = processor(
-            image_inputs, task_inputs=["semantic"] * len(image_inputs), return_tensors="pt"
+            image_inputs, ["semantic"] * len(image_inputs), return_tensors="pt"
         ).task_inputs
 
         self.assertEqual(
@@ -286,11 +274,7 @@ class OneFormerProcessingTest(unittest.TestCase):
             self.assertIsInstance(image, np.ndarray)
 
         # Test not batched input
-        encoded_images = processor(
-            image_inputs[0],
-            task_inputs=["semantic"],
-            return_tensors="pt",
-        ).pixel_values
+        encoded_images = processor(image_inputs[0], ["semantic"], return_tensors="pt").pixel_values
 
         expected_height, expected_width, expected_sequence_length = self.processing_tester.get_expected_values(
             image_inputs
@@ -301,11 +285,7 @@ class OneFormerProcessingTest(unittest.TestCase):
             (1, self.processing_tester.num_channels, expected_height, expected_width),
         )
 
-        tokenized_task_inputs = processor(
-            image_inputs[0],
-            task_inputs=["semantic"],
-            return_tensors="pt",
-        ).task_inputs
+        tokenized_task_inputs = processor(image_inputs[0], ["semantic"], return_tensors="pt").task_inputs
 
         self.assertEqual(
             tokenized_task_inputs.shape,
@@ -317,11 +297,7 @@ class OneFormerProcessingTest(unittest.TestCase):
             image_inputs, batched=True
         )
 
-        encoded_images = processor(
-            image_inputs,
-            task_inputs=["semantic"] * len(image_inputs),
-            return_tensors="pt",
-        ).pixel_values
+        encoded_images = processor(image_inputs, ["semantic"] * len(image_inputs), return_tensors="pt").pixel_values
         self.assertEqual(
             encoded_images.shape,
             (
@@ -333,7 +309,7 @@ class OneFormerProcessingTest(unittest.TestCase):
         )
 
         tokenized_task_inputs = processor(
-            image_inputs, task_inputs=["semantic"] * len(image_inputs), return_tensors="pt"
+            image_inputs, ["semantic"] * len(image_inputs), return_tensors="pt"
         ).task_inputs
 
         self.assertEqual(
@@ -350,11 +326,7 @@ class OneFormerProcessingTest(unittest.TestCase):
             self.assertIsInstance(image, torch.Tensor)
 
         # Test not batched input
-        encoded_images = processor(
-            image_inputs[0],
-            task_inputs=["semantic"],
-            return_tensors="pt",
-        ).pixel_values
+        encoded_images = processor(image_inputs[0], ["semantic"], return_tensors="pt").pixel_values
 
         expected_height, expected_width, expected_sequence_length = self.processing_tester.get_expected_values(
             image_inputs
@@ -365,11 +337,7 @@ class OneFormerProcessingTest(unittest.TestCase):
             (1, self.processing_tester.num_channels, expected_height, expected_width),
         )
 
-        tokenized_task_inputs = processor(
-            image_inputs[0],
-            task_inputs=["semantic"],
-            return_tensors="pt",
-        ).task_inputs
+        tokenized_task_inputs = processor(image_inputs[0], ["semantic"], return_tensors="pt").task_inputs
 
         self.assertEqual(
             tokenized_task_inputs.shape,
@@ -381,11 +349,7 @@ class OneFormerProcessingTest(unittest.TestCase):
             image_inputs, batched=True
         )
 
-        encoded_images = processor(
-            image_inputs,
-            task_inputs=["semantic"] * len(image_inputs),
-            return_tensors="pt",
-        ).pixel_values
+        encoded_images = processor(image_inputs, ["semantic"] * len(image_inputs), return_tensors="pt").pixel_values
         self.assertEqual(
             encoded_images.shape,
             (
@@ -397,7 +361,7 @@ class OneFormerProcessingTest(unittest.TestCase):
         )
 
         tokenized_task_inputs = processor(
-            image_inputs, task_inputs=["semantic"] * len(image_inputs), return_tensors="pt"
+            image_inputs, ["semantic"] * len(image_inputs), return_tensors="pt"
         ).task_inputs
 
         self.assertEqual(
@@ -425,8 +389,8 @@ class OneFormerProcessingTest(unittest.TestCase):
 
         inputs = processor(
             image_inputs,
-            task_inputs=["semantic"] * len(image_inputs),
-            segmentation_maps=annotations,
+            ["semantic"] * len(image_inputs),
+            annotations,
             return_tensors="pt",
             instance_id_to_semantic_id=instance_id_to_semantic_id,
             pad_and_return_pixel_mask=True,
