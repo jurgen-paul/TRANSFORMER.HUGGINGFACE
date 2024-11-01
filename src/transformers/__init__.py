@@ -436,6 +436,10 @@ _import_structure = {
         "FlavaMultimodalConfig",
         "FlavaTextConfig",
     ],
+    "models.florence2": [
+        "Florence2Config",
+        "Florence2Processor",
+    ],
     "models.fnet": ["FNetConfig"],
     "models.focalnet": ["FocalNetConfig"],
     "models.fsmt": [
@@ -2235,6 +2239,17 @@ else:
             "FlavaMultimodalModel",
             "FlavaPreTrainedModel",
             "FlavaTextModel",
+        ]
+    )
+    _import_structure["models.florence2"].extend(
+        [
+            "Florence2ForConditionalGeneration",
+            "Florence2LanguageForConditionalGeneration",
+            "Florence2LanguageModel",
+            "Florence2LanguagePreTrainedModel",
+            "Florence2PreTrainedModel",
+            "Florence2VisionModel",
+            "Florence2VisionModelWithProjection",
         ]
     )
     _import_structure["models.fnet"].extend(
@@ -5302,6 +5317,10 @@ if TYPE_CHECKING:
         FlavaMultimodalConfig,
         FlavaTextConfig,
     )
+    from .models.florence2 import (
+        Florence2Config,
+        Florence2Processor,
+    )
     from .models.fnet import FNetConfig
     from .models.focalnet import FocalNetConfig
     from .models.fsmt import (
@@ -6987,6 +7006,15 @@ if TYPE_CHECKING:
             FlavaMultimodalModel,
             FlavaPreTrainedModel,
             FlavaTextModel,
+        )
+        from .models.florence2 import (
+            Florence2ForConditionalGeneration,
+            Florence2LanguageForConditionalGeneration,
+            Florence2LanguageModel,
+            Florence2LanguagePreTrainedModel,
+            Florence2PreTrainedModel,
+            Florence2VisionModel,
+            Florence2VisionModelWithProjection,
         )
         from .models.fnet import (
             FNetForMaskedLM,
