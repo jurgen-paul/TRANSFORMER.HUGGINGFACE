@@ -558,6 +558,7 @@ _import_structure = {
     "models.layoutxlm": ["LayoutXLMProcessor"],
     "models.led": ["LEDConfig", "LEDTokenizer"],
     "models.levit": ["LevitConfig"],
+    "models.lightglue": ["LightGlueConfig"],
     "models.lilt": ["LiltConfig"],
     "models.llama": ["LlamaConfig"],
     "models.llava": [
@@ -1270,6 +1271,7 @@ else:
     _import_structure["models.layoutlmv2"].extend(["LayoutLMv2FeatureExtractor", "LayoutLMv2ImageProcessor"])
     _import_structure["models.layoutlmv3"].extend(["LayoutLMv3FeatureExtractor", "LayoutLMv3ImageProcessor"])
     _import_structure["models.levit"].extend(["LevitFeatureExtractor", "LevitImageProcessor"])
+    _import_structure["models.lightglue"].extend(["LightGlueImageProcessor"])
     _import_structure["models.llava"].append("LlavaImageProcessor")
     _import_structure["models.llava_next"].append("LlavaNextImageProcessor")
     _import_structure["models.llava_next_video"].append("LlavaNextVideoImageProcessor")
@@ -2745,6 +2747,12 @@ else:
             "LevitForImageClassificationWithTeacher",
             "LevitModel",
             "LevitPreTrainedModel",
+        ]
+    )
+    _import_structure["models.lightglue"].extend(
+        [
+            "LightGlueForKeypointMatching",
+            "LightGluePreTrainedModel",
         ]
     )
     _import_structure["models.lilt"].extend(
@@ -5714,6 +5722,7 @@ if TYPE_CHECKING:
     from .models.layoutxlm import LayoutXLMProcessor
     from .models.led import LEDConfig, LEDTokenizer
     from .models.levit import LevitConfig
+    from .models.lightglue import LightGlueConfig
     from .models.lilt import LiltConfig
     from .models.llama import LlamaConfig
     from .models.llava import (
@@ -6467,6 +6476,7 @@ if TYPE_CHECKING:
             LayoutLMv3ImageProcessor,
         )
         from .models.levit import LevitFeatureExtractor, LevitImageProcessor
+        from .models.lightglue import LightGlueImageProcessor
         from .models.llava import LlavaImageProcessor
         from .models.llava_next import LlavaNextImageProcessor
         from .models.llava_next_video import LlavaNextVideoImageProcessor
@@ -7684,6 +7694,10 @@ if TYPE_CHECKING:
             LevitForImageClassificationWithTeacher,
             LevitModel,
             LevitPreTrainedModel,
+        )
+        from .models.lightglue import (
+            LightGlueForKeypointMatching,
+            LightGluePreTrainedModel,
         )
         from .models.lilt import (
             LiltForQuestionAnswering,
