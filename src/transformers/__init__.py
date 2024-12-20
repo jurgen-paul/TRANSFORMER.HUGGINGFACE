@@ -570,7 +570,6 @@ _import_structure = {
     "models.m2m_100": ["M2M100Config"],
     "models.mamba": ["MambaConfig"],
     "models.mamba2": ["Mamba2Config"],
-    "models.xlstm": ["xLSTMConfig"],
     "models.marian": ["MarianConfig"],
     "models.markuplm": [
         "MarkupLMConfig",
@@ -869,6 +868,7 @@ _import_structure = {
     "models.xlm_roberta": ["XLMRobertaConfig"],
     "models.xlm_roberta_xl": ["XLMRobertaXLConfig"],
     "models.xlnet": ["XLNetConfig"],
+    "models.xlstm": ["xLSTMConfig"],
     "models.xmod": ["XmodConfig"],
     "models.yolos": ["YolosConfig"],
     "models.yoso": ["YosoConfig"],
@@ -2732,13 +2732,6 @@ else:
             "Mamba2PreTrainedModel",
         ]
     )
-    _import_structure["models.xlstm"].extend(
-        [
-            "xLSTMForCausalLM",
-            "xLSTMModel",
-            "xLSTMPreTrainedModel",
-        ]
-    )
     _import_structure["models.marian"].extend(
         ["MarianForCausalLM", "MarianModel", "MarianMTModel", "MarianPreTrainedModel"]
     )
@@ -3859,6 +3852,13 @@ else:
             "XLNetModel",
             "XLNetPreTrainedModel",
             "load_tf_weights_in_xlnet",
+        ]
+    )
+    _import_structure["models.xlstm"].extend(
+        [
+            "xLSTMForCausalLM",
+            "xLSTMModel",
+            "xLSTMPreTrainedModel",
         ]
     )
     _import_structure["models.xmod"].extend(
