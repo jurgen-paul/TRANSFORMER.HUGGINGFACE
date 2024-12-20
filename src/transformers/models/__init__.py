@@ -148,6 +148,7 @@ from . import (
     m2m_100,
     mamba,
     mamba2,
+    xlstm,
     marian,
     markuplm,
     mask2former,
