@@ -87,6 +87,10 @@ PRIVATE_MODELS = [
     "Idefics3VisionTransformer",
     "AriaTextForCausalLM",
     "AriaTextModel",
+    # FIXME not happy with including these here - clues to remove?
+    "MolmoAdapterModel",
+    "MolmoTextPreTrainedModel",
+    "MolmoVisionModel",
 ]
 
 # Update this list for models that are not tested with a comment explaining the reason it should not be.
@@ -139,6 +143,8 @@ IGNORE_NON_TESTED = (
         "Qwen2VLModel",  # Building part of bigger (tested) model. Tested implicitly through Qwen2VLForConditionalGeneration.
         "MllamaTextModel",  # Building part of bigger (tested) model. # TODO: add tests
         "MllamaVisionModel",  # Building part of bigger (tested) model. # TODO: add tests
+        "MolmoForCausalLM",  # Building part of bigger (tested) model.
+        "MolmoTextModel",  # Building part of bigger (tested) model.
     ]
 )
 
@@ -333,6 +339,7 @@ IGNORE_NON_AUTO_CONFIGURED = PRIVATE_MODELS.copy() + [
     "VitPoseForPoseEstimation",
     "CLIPTextModel",
     "MoshiForConditionalGeneration",  # no auto class for speech-to-speech
+    "MolmoTextModel",
 ]
 
 # DO NOT edit this list!
