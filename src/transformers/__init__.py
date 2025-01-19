@@ -731,6 +731,10 @@ _import_structure = {
         "Qwen2VLConfig",
         "Qwen2VLProcessor",
     ],
+    "models.colqwen2": [
+        "ColQwen2Config",
+        "ColQwen2Processor",
+    ],
     "models.rag": ["RagConfig", "RagRetriever", "RagTokenizer"],
     "models.recurrent_gemma": ["RecurrentGemmaConfig"],
     "models.reformer": ["ReformerConfig"],
@@ -1284,6 +1288,7 @@ else:
     _import_structure["models.poolformer"].extend(["PoolFormerFeatureExtractor", "PoolFormerImageProcessor"])
     _import_structure["models.pvt"].extend(["PvtImageProcessor"])
     _import_structure["models.qwen2_vl"].extend(["Qwen2VLImageProcessor"])
+    _import_structure["models.colqwen2"].extend(["ColQwen2ImageProcessor"])
     _import_structure["models.rt_detr"].extend(["RTDetrImageProcessor"])
     _import_structure["models.sam"].extend(["SamImageProcessor"])
     _import_structure["models.segformer"].extend(["SegformerFeatureExtractor", "SegformerImageProcessor"])
@@ -3363,6 +3368,12 @@ else:
             "Qwen2VLForConditionalGeneration",
             "Qwen2VLModel",
             "Qwen2VLPreTrainedModel",
+        ]
+    )
+    _import_structure["models.colqwen2"].extend(
+        [
+            "ColQwenForRetrieval",
+            "ColQwen2PreTrainedModel",
         ]
     )
     _import_structure["models.rag"].extend(
@@ -5890,6 +5901,10 @@ if TYPE_CHECKING:
         Qwen2VLConfig,
         Qwen2VLProcessor,
     )
+    from .models.colqwen2 import (
+        ColQwen2Config,
+        ColQwen2Processor,
+    )
     from .models.rag import RagConfig, RagRetriever, RagTokenizer
     from .models.recurrent_gemma import RecurrentGemmaConfig
     from .models.reformer import ReformerConfig
@@ -6467,6 +6482,7 @@ if TYPE_CHECKING:
         )
         from .models.pvt import PvtImageProcessor
         from .models.qwen2_vl import Qwen2VLImageProcessor
+        from .models.colqwen2 import ColQwen2ImageProcessor
         from .models.rt_detr import RTDetrImageProcessor
         from .models.sam import SamImageProcessor
         from .models.segformer import SegformerFeatureExtractor, SegformerImageProcessor
@@ -8135,6 +8151,11 @@ if TYPE_CHECKING:
             Qwen2VLForConditionalGeneration,
             Qwen2VLModel,
             Qwen2VLPreTrainedModel,
+        )
+        from .models.colqwen2 import (
+            ColQwen2ForConditionalGeneration,
+            ColQwen2Model,
+            ColQwen2PreTrainedModel,
         )
         from .models.rag import (
             RagModel,
