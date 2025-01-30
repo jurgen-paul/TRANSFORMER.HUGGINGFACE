@@ -943,6 +943,7 @@ class ModelTesterMixin:
 
         config, inputs_dict = self.model_tester.prepare_config_and_inputs_for_common()
         config.return_dict = True
+        config._attn_implementation = "eager"  # Set attention implementation explicitly
 
         seq_len = getattr(self.model_tester, "seq_length", None)
         decoder_seq_length = getattr(self.model_tester, "decoder_seq_length", seq_len)
