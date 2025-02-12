@@ -4177,6 +4177,7 @@ class ModelTesterMixin:
                                             outputs_sdpa = model_sdpa(**prepared_inputs)
 
                                     # Test gradients
+                                    torch.manual_seed(42) 
                                     model_eager.train()
                                     model_sdpa.train()
 
