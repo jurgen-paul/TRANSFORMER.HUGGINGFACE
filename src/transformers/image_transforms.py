@@ -81,9 +81,15 @@ def to_channel_dimension_format(
         return image
 
     if target_channel_dim == ChannelDimension.FIRST:
-        image = image.transpose((2, 0, 1))
+        if image.ndim == 3:
+            image = image.transpose((2, 0, 1))
+        elif image.ndim == 4:
+            image = image.transpose((0, 3, 1, 2))
     elif target_channel_dim == ChannelDimension.LAST:
-        image = image.transpose((1, 2, 0))
+        if image.ndim == 3:
+            image = image.transpose((1, 2, 0))
+        elif image.ndim == 4:
+            image = image.transpose((0, 2, 3, 1))
     else:
         raise ValueError("Unsupported channel dimension format: {}".format(channel_dim))
 
@@ -119,11 +125,18 @@ def rescale(
     if not isinstance(image, np.ndarray):
         raise TypeError(f"Input image must be of type np.ndarray, got {type(image)}")
 
-    rescaled_image = image.astype(np.float64) * scale  # Numpy type promotion has changed, so always upcast first
+    # Cast to float to avoid errors that can occur when we get uint8 values and negative scale see #34180.
+    if not np.issubdtype(image.dtype, np.floating) and scale < 0:
+        image = image.astype(np.float64)
+
+    rescaled_image = image * scale
     if data_format is not None:
         rescaled_image = to_channel_dimension_format(rescaled_image, data_format, input_data_format)
 
-    rescaled_image = rescaled_image.astype(dtype)  # Finally downcast to the desired dtype at the end
+    # Finally downcast to the desired dtype at the end if not already same dtype
+    # Check dtypes before casting because `astype()` is not efficient with higher dim array
+    if not image.dtype == dtype:
+        rescaled_image = rescaled_image.astype(dtype)
 
     return rescaled_image
 
@@ -442,7 +455,9 @@ def normalize(
     if input_data_format == ChannelDimension.LAST:
         image = (image - mean) / std
     else:
-        image = ((image.T - mean) / std).T
+        image = np.moveaxis(image, -3, -1)
+        image = (image - mean) / std
+        image = np.moveaxis(image, -1, -3)
 
     image = to_channel_dimension_format(image, data_format, input_data_format) if data_format is not None else image
     return image

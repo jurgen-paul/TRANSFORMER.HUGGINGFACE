@@ -146,7 +146,6 @@ _import_structure = {
     ],
     "loss": [],
     "modelcard": ["ModelCard"],
-    # Losses
     "modeling_tf_pytorch_utils": [
         "convert_tf_weight_name_to_pt_weight_name",
         "load_pytorch_checkpoint_in_tf2_model",
@@ -156,8 +155,9 @@ _import_structure = {
         "load_tf2_model_in_pytorch_model",
         "load_tf2_weights_in_pytorch_model",
     ],
-    # Models
+    # Losses
     "models": [],
+    # Models
     "models.albert": ["AlbertConfig"],
     "models.align": [
         "AlignConfig",
@@ -187,11 +187,13 @@ _import_structure = {
         "MODEL_NAMES_MAPPING",
         "PROCESSOR_MAPPING",
         "TOKENIZER_MAPPING",
+        "VIDEO_PROCESSOR_MAPPING",
         "AutoConfig",
         "AutoFeatureExtractor",
         "AutoImageProcessor",
         "AutoProcessor",
         "AutoTokenizer",
+        "AutoVideoProcessor",
     ],
     "models.autoformer": ["AutoformerConfig"],
     "models.bamba": ["BambaConfig"],
@@ -1033,6 +1035,7 @@ _import_structure = {
         "TorchAoConfig",
         "VptqConfig",
     ],
+    "video_utils": [],
 }
 
 # sentencepiece-backed objects
@@ -1256,13 +1259,17 @@ else:
     _import_structure["models.idefics2"].extend(["Idefics2ImageProcessor"])
     _import_structure["models.idefics3"].extend(["Idefics3ImageProcessor"])
     _import_structure["models.imagegpt"].extend(["ImageGPTFeatureExtractor", "ImageGPTImageProcessor"])
-    _import_structure["models.instructblipvideo"].extend(["InstructBlipVideoImageProcessor"])
+    _import_structure["models.instructblipvideo"].extend(
+        ["InstructBlipVideoImageProcessor", "InstructBlipVideoVideoProcessor"]
+    )
     _import_structure["models.layoutlmv2"].extend(["LayoutLMv2FeatureExtractor", "LayoutLMv2ImageProcessor"])
     _import_structure["models.layoutlmv3"].extend(["LayoutLMv3FeatureExtractor", "LayoutLMv3ImageProcessor"])
     _import_structure["models.levit"].extend(["LevitFeatureExtractor", "LevitImageProcessor"])
     _import_structure["models.llava"].append("LlavaImageProcessor")
     _import_structure["models.llava_next"].append("LlavaNextImageProcessor")
-    _import_structure["models.llava_next_video"].append("LlavaNextVideoImageProcessor")
+    _import_structure["models.llava_next_video"].extend(
+        ["LlavaNextVideoImageProcessor", "LlavaNextVideoVideoProcessor"]
+    )
     _import_structure["models.llava_onevision"].extend(
         ["LlavaOnevisionImageProcessor", "LlavaOnevisionVideoProcessor"]
     )
@@ -1281,8 +1288,8 @@ else:
     _import_structure["models.pixtral"].append("PixtralImageProcessor")
     _import_structure["models.poolformer"].extend(["PoolFormerFeatureExtractor", "PoolFormerImageProcessor"])
     _import_structure["models.pvt"].extend(["PvtImageProcessor"])
-    _import_structure["models.qwen2_5_vl"].extend(["Qwen2_5_VLImageProcessor"])
-    _import_structure["models.qwen2_vl"].extend(["Qwen2VLImageProcessor"])
+    _import_structure["models.qwen2_5_vl"].extend(["Qwen2_5_VLImageProcessor", "Qwen2_5_VLVideoProcessor"])
+    _import_structure["models.qwen2_vl"].extend(["Qwen2VLImageProcessor", "Qwen2VLVideoProcessor"])
     _import_structure["models.rt_detr"].extend(["RTDetrImageProcessor"])
     _import_structure["models.sam"].extend(["SamImageProcessor"])
     _import_structure["models.segformer"].extend(["SegformerFeatureExtractor", "SegformerImageProcessor"])
@@ -1293,7 +1300,7 @@ else:
     _import_structure["models.swin2sr"].append("Swin2SRImageProcessor")
     _import_structure["models.textnet"].extend(["TextNetImageProcessor"])
     _import_structure["models.tvp"].append("TvpImageProcessor")
-    _import_structure["models.video_llava"].append("VideoLlavaImageProcessor")
+    _import_structure["models.video_llava"].extend(["VideoLlavaImageProcessor", "VideoLlavaVideoProcessor"])
     _import_structure["models.videomae"].extend(["VideoMAEFeatureExtractor", "VideoMAEImageProcessor"])
     _import_structure["models.vilt"].extend(["ViltFeatureExtractor", "ViltImageProcessor", "ViltProcessor"])
     _import_structure["models.vit"].extend(["ViTFeatureExtractor", "ViTImageProcessor"])
@@ -1302,6 +1309,7 @@ else:
     _import_structure["models.vivit"].append("VivitImageProcessor")
     _import_structure["models.yolos"].extend(["YolosFeatureExtractor", "YolosImageProcessor"])
     _import_structure["models.zoedepth"].append("ZoeDepthImageProcessor")
+    _import_structure["video_processing_utils"] = ["BaseVideoProcessor"]
 
 try:
     if not is_torchvision_available():
@@ -1321,14 +1329,21 @@ else:
     _import_structure["models.deit"].append("DeiTImageProcessorFast")
     _import_structure["models.depth_pro"].append("DepthProImageProcessorFast")
     _import_structure["models.detr"].append("DetrImageProcessorFast")
+    _import_structure["models.instructblipvideo"].append("InstructBlipVideoVideoProcessorFast")
     _import_structure["models.llava"].append("LlavaImageProcessorFast")
     _import_structure["models.llava_next"].append("LlavaNextImageProcessorFast")
-    _import_structure["models.llava_onevision"].append("LlavaOnevisionImageProcessorFast")
+    _import_structure["models.llava_next_video"].append("LlavaNextVideoVideoProcessorFast")
+    _import_structure["models.llava_onevision"].extend(
+        ["LlavaOnevisionImageProcessorFast", "LlavaOnevisionVideoProcessorFast"]
+    )
     _import_structure["models.pixtral"].append("PixtralImageProcessorFast")
-    _import_structure["models.qwen2_vl"].append("Qwen2VLImageProcessorFast")
+    _import_structure["models.qwen2_5_vl"].append("Qwen2_5_VLVideoProcessorFast")
+    _import_structure["models.qwen2_vl"].extend(["Qwen2VLImageProcessorFast", "Qwen2VLVideoProcessorFast"])
     _import_structure["models.rt_detr"].append("RTDetrImageProcessorFast")
     _import_structure["models.siglip"].append("SiglipImageProcessorFast")
+    _import_structure["models.video_llava"].append("VideoLlavaVideoProcessorFast")
     _import_structure["models.vit"].append("ViTImageProcessorFast")
+    _import_structure["video_processing_utils_fast"] = ["BaseVideoProcessorFast"]
 
 try:
     if not (is_torchvision_available() and is_timm_available()):
@@ -5273,11 +5288,13 @@ if TYPE_CHECKING:
         MODEL_NAMES_MAPPING,
         PROCESSOR_MAPPING,
         TOKENIZER_MAPPING,
+        VIDEO_PROCESSOR_MAPPING,
         AutoConfig,
         AutoFeatureExtractor,
         AutoImageProcessor,
         AutoProcessor,
         AutoTokenizer,
+        AutoVideoProcessor,
     )
     from .models.autoformer import (
         AutoformerConfig,
@@ -6403,7 +6420,7 @@ if TYPE_CHECKING:
         from .models.idefics2 import Idefics2ImageProcessor
         from .models.idefics3 import Idefics3ImageProcessor
         from .models.imagegpt import ImageGPTFeatureExtractor, ImageGPTImageProcessor
-        from .models.instructblipvideo import InstructBlipVideoImageProcessor
+        from .models.instructblipvideo import InstructBlipVideoImageProcessor, InstructBlipVideoVideoProcessor
         from .models.layoutlmv2 import (
             LayoutLMv2FeatureExtractor,
             LayoutLMv2ImageProcessor,
@@ -6415,7 +6432,7 @@ if TYPE_CHECKING:
         from .models.levit import LevitFeatureExtractor, LevitImageProcessor
         from .models.llava import LlavaImageProcessor
         from .models.llava_next import LlavaNextImageProcessor
-        from .models.llava_next_video import LlavaNextVideoImageProcessor
+        from .models.llava_next_video import LlavaNextVideoImageProcessor, LlavaNextVideoVideoProcessor
         from .models.llava_onevision import LlavaOnevisionImageProcessor, LlavaOnevisionVideoProcessor
         from .models.mask2former import Mask2FormerImageProcessor
         from .models.maskformer import (
@@ -6444,8 +6461,8 @@ if TYPE_CHECKING:
             PoolFormerImageProcessor,
         )
         from .models.pvt import PvtImageProcessor
-        from .models.qwen2_5_vl import Qwen2_5_VLImageProcessor
-        from .models.qwen2_vl import Qwen2VLImageProcessor
+        from .models.qwen2_5_vl import Qwen2_5_VLImageProcessor, Qwen2_5_VLVideoProcessor
+        from .models.qwen2_vl import Qwen2VLImageProcessor, Qwen2VLVideoProcessor
         from .models.rt_detr import RTDetrImageProcessor
         from .models.sam import SamImageProcessor
         from .models.segformer import SegformerFeatureExtractor, SegformerImageProcessor
@@ -6456,7 +6473,7 @@ if TYPE_CHECKING:
         from .models.swin2sr import Swin2SRImageProcessor
         from .models.textnet import TextNetImageProcessor
         from .models.tvp import TvpImageProcessor
-        from .models.video_llava import VideoLlavaImageProcessor
+        from .models.video_llava import VideoLlavaImageProcessor, VideoLlavaVideoProcessor
         from .models.videomae import VideoMAEFeatureExtractor, VideoMAEImageProcessor
         from .models.vilt import ViltFeatureExtractor, ViltImageProcessor, ViltProcessor
         from .models.vit import ViTFeatureExtractor, ViTImageProcessor
@@ -6465,6 +6482,7 @@ if TYPE_CHECKING:
         from .models.vivit import VivitImageProcessor
         from .models.yolos import YolosFeatureExtractor, YolosImageProcessor
         from .models.zoedepth import ZoeDepthImageProcessor
+        from .video_processing_utils import BaseVideoProcessor
 
     try:
         if not is_torchvision_available():
@@ -6480,14 +6498,19 @@ if TYPE_CHECKING:
         from .models.deit import DeiTImageProcessorFast
         from .models.depth_pro import DepthProImageProcessorFast
         from .models.detr import DetrImageProcessorFast
+        from .models.instructblipvideo import InstructBlipVideoVideoProcessorFast
         from .models.llava import LlavaImageProcessorFast
         from .models.llava_next import LlavaNextImageProcessorFast
-        from .models.llava_onevision import LlavaOnevisionImageProcessorFast
+        from .models.llava_next_video import LlavaNextVideoVideoProcessorFast
+        from .models.llava_onevision import LlavaOnevisionImageProcessorFast, LlavaOnevisionVideoProcessorFast
         from .models.pixtral import PixtralImageProcessorFast
-        from .models.qwen2_vl import Qwen2VLImageProcessorFast
+        from .models.qwen2_5_vl import Qwen2_5_VLVideoProcessorFast
+        from .models.qwen2_vl import Qwen2VLImageProcessorFast, Qwen2VLVideoProcessorFast
         from .models.rt_detr import RTDetrImageProcessorFast
         from .models.siglip import SiglipImageProcessorFast
+        from .models.video_llava import VideoLlavaVideoProcessorFast
         from .models.vit import ViTImageProcessorFast
+        from .video_processing_utils_fast import BaseVideoProcessorFast
 
     try:
         if not (is_torchvision_available() and is_timm_available()):
