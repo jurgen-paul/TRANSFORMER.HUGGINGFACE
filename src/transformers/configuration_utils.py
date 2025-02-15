@@ -68,6 +68,10 @@ class PretrainedConfig(PushToHubMixin):
     - **is_composition** (`bool`) -- Whether the config class is composed of multiple sub-configs. In this case the
       config has to be initialized from two or more configs of type [`~transformers.PretrainedConfig`] like:
       [`~transformers.EncoderDecoderConfig`] or [`~RagConfig`].
+    - **all_sub_configs_have_defaults** (`bool`) -- In general, if `is_composition == True`, the config object
+      must be initialized passing at least one of the sub-configs. But if
+      `all_sub_configs_have_defaults == True`, all sub-configs have defaults, so the config can be created
+      without arguments.
     - **keys_to_ignore_at_inference** (`List[str]`) -- A list of keys to ignore by default when looking at dictionary
       outputs of the model during inference.
     - **attribute_map** (`Dict[str, str]`) -- A dict that maps model specific attribute names to the standardized
@@ -198,6 +202,7 @@ class PretrainedConfig(PushToHubMixin):
     base_config_key: str = ""
     sub_configs: Dict[str, "PretrainedConfig"] = {}
     is_composition: bool = False
+    all_sub_configs_have_defaults: bool = False
     attribute_map: Dict[str, str] = {}
     base_model_tp_plan: Optional[Dict[str, Any]] = None
     base_model_pp_plan: Optional[Dict[str, Tuple[List[str]]]] = None
