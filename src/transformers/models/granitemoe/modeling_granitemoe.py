@@ -401,7 +401,6 @@ class GraniteMoeMoE(nn.Module):
         return layer_output, router_logits
 
 
-# Copied from transformers.models.granite.modeling_granite.repeat_kv with Granite->GraniteMoe
 def repeat_kv(hidden_states: torch.Tensor, n_rep: int) -> torch.Tensor:
     """
     This is the equivalent of torch.repeat_interleave(x, dim=1, repeats=n_rep). The hidden states go from (batch,
