@@ -81,6 +81,8 @@ CONFIG_MAPPING_NAMES = OrderedDict(
         ("ctrl", "CTRLConfig"),
         ("cvt", "CvtConfig"),
         ("dab-detr", "DabDetrConfig"),
+        ("d_fine", "DFineConfig"),
+        ("d_fine_resnet", "DFineResNetConfig"),
         ("dac", "DacConfig"),
         ("data2vec-audio", "Data2VecAudioConfig"),
         ("data2vec-text", "Data2VecTextConfig"),
@@ -412,6 +414,8 @@ MODEL_NAMES_MAPPING = OrderedDict(
         ("ctrl", "CTRL"),
         ("cvt", "CvT"),
         ("dab-detr", "DAB-DETR"),
+        ("d_fine", "D-FINE"),
+        ("d_fine_resnet", "D-FINE-ResNet"),
         ("dac", "DAC"),
         ("data2vec-audio", "Data2VecAudio"),
         ("data2vec-text", "Data2VecText"),
@@ -761,6 +765,7 @@ SPECIAL_MODEL_TYPE_TO_MODULE_NAME = OrderedDict(
         ("chinese_clip_vision_model", "chinese_clip"),
         ("rt_detr_resnet", "rt_detr"),
         ("granitevision", "llava_next"),
+        ("d_fine_resnet", "d_fine"),
     ]
 )
 
