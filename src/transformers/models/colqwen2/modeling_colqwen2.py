@@ -111,16 +111,12 @@ class ColQwen2ForRetrievalOutput(BaseModelOutputWithPast):
 
             Attentions weights after the attention softmax, used to compute the weighted average in the self-attention
             heads.
-        image_hidden_states (`torch.FloatTensor`, *optional*):
-            A `torch.FloatTensor` of size `(batch_size, num_images, sequence_length, hidden_size)`.
-            image_hidden_states of the model produced by the vision encoder after projecting last hidden state.
     """
 
     embeddings: torch.Tensor = None
     past_key_values: Optional[Union[List[torch.FloatTensor], Cache]] = None
     hidden_states: Optional[Tuple[torch.FloatTensor]] = None
     attentions: Optional[Tuple[torch.FloatTensor]] = None
-    image_hidden_states: Optional[torch.FloatTensor] = None
 
 
 COLQWEN2_FOR_RETRIEVAL_INPUT_DOCSTRING = r"""
@@ -485,7 +481,6 @@ class ColQwen2ForRetrieval(ColQwen2PreTrainedModel):
         if not return_dict:
             output = (embeddings,) + outputs[2:]
             output[2] = output[2] if output_hidden_states is not None else None
-            output[-1] = (outputs.image_hidden_states if pixel_values is not None else None,)
             return output
 
         return ColQwen2ForRetrievalOutput(
@@ -493,7 +488,6 @@ class ColQwen2ForRetrieval(ColQwen2PreTrainedModel):
             past_key_values=outputs.past_key_values,
             hidden_states=outputs.hidden_states if output_hidden_states else None,
             attentions=outputs.attentions,
-            image_hidden_states=outputs.image_hidden_states if pixel_values is not None else None,
         )
 
     def resize_token_embeddings(
