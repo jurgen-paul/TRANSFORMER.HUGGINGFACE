@@ -52,9 +52,9 @@ class ColQwen2ForRetrievalModelTester:
         self,
         parent,
         ignore_index=-100,
-        image_token_index=0,
+        pad_token_id=2,
         projector_hidden_act="gelu",
-        seq_length=25,
+        seq_length=20,
         vision_feature_select_strategy="default",
         vision_feature_layer=-1,
         projection_dim=32,
@@ -62,10 +62,12 @@ class ColQwen2ForRetrievalModelTester:
         use_cache=False,
         vlm_config={
             "_name_or_path": "Qwen/Qwen2-VL-2B-Instruct",
-            "bos_token_id": 151643,
-            "eos_token_id": 151645,
+            "bos_token_id": 0,
+            "eos_token_id": 1,
+            "vision_start_token_id": 3,
+            "image_token_id": 4,
+            "video_token_id": 5,
             "hidden_size": 1536,
-            "image_token_id": 151655,
             "intermediate_size": 2,
             "max_window_layers": 2,
             "model_type": "qwen2_vl",
@@ -73,29 +75,47 @@ class ColQwen2ForRetrievalModelTester:
             "num_hidden_layers": 2,
             "num_key_value_heads": 2,
             "rms_norm_eps": 1e-06,
-            "rope_scaling": {"mrope_section": [16, 24, 24], "rope_type": "default", "type": "default"},
+            "rope_scaling": {"mrope_section": [1, 1, 1], "rope_type": "default", "type": "default"},
             "sliding_window": 32768,
             "tie_word_embeddings": True,
             "torch_dtype": "bfloat16",
-            "video_token_id": 151656,
-            "vision_config": {"hidden_size": 2, "in_chans": 3, "spatial_patch_size": 14},
+            "vision_config": {
+                "depth": 2,
+                "embed_dim": 32,
+                "hidden_act": "quick_gelu",
+                "hidden_size": 32,
+                "mlp_ratio": 4,
+                "num_heads": 4,
+                "patch_size": 14,
+                "in_chans": 3,
+                "spatial_merge_size": 1,
+                "temporal_patch_size": 1,
+            },
             "vision_end_token_id": 151653,
-            "vision_start_token_id": 151652,
             "vision_token_id": 151654,
             "vocab_size": 99,
         },
-        embedding_dim=128,
+        embedding_dim=32,
     ):
         self.parent = parent
         self.ignore_index = ignore_index
+        self.pad_token_id = pad_token_id
+
         # `image_token_index` is set to 0 to pass "resize_embeddings" test, do not modify
-        self.image_token_index = image_token_index
+        self.image_token_index = 0
+
+        self.image_token_id = vlm_config["image_token_id"]
+        self.video_token_id = vlm_config["video_token_id"]
+        self.pad_token_id = vlm_config["eos_token_id"]
         self.projector_hidden_act = projector_hidden_act
         self.vision_feature_select_strategy = vision_feature_select_strategy
         self.vision_feature_layer = vision_feature_layer
-        self.seq_length = seq_length
+
+        self.image_size = 14
+        self.num_image_tokens = 32
+
+        self.seq_length = seq_length + self.num_image_tokens
         self.projection_dim = projection_dim
-        self.pad_token_id = vlm_config["eos_token_id"]
 
         self.num_hidden_layers = vlm_config["num_hidden_layers"]
         self.vocab_size = vlm_config["vocab_size"]
@@ -105,7 +125,7 @@ class ColQwen2ForRetrievalModelTester:
 
         self.batch_size = 3
         self.num_channels = vlm_config["vision_config"]["in_chans"]
-        self.image_size = 56
+
         self.encoder_seq_length = seq_length
         self.use_cache = use_cache
 
@@ -119,15 +139,23 @@ class ColQwen2ForRetrievalModelTester:
         )
 
     def prepare_config_and_inputs(self):
+        # pixel_values = floats_tensor(
+        #     [
+        #         self.batch_size,
+        #         self.num_channels,
+        #         self.image_size,
+        #         self.image_size,
+        #     ]
+        # )
+        config = self.get_config()
+        patch_size = config.vlm_config.vision_config.patch_size
+        temporal_patch_size = config.vlm_config.vision_config.temporal_patch_size
         pixel_values = floats_tensor(
             [
-                self.batch_size,
-                self.num_channels,
-                self.image_size,
-                self.image_size,
+                self.batch_size * (self.image_size**2) // (patch_size**2),
+                self.num_channels * (patch_size**2) * temporal_patch_size,
             ]
         )
-        config = self.get_config()
 
         return config, pixel_values
 
@@ -137,16 +165,16 @@ class ColQwen2ForRetrievalModelTester:
         input_ids = (
             ids_tensor(shape=[self.batch_size, self.seq_length], vocab_size=config.vlm_config.vocab_size - 1) + 1
         )
-        attention_mask = input_ids.ne(1).to(torch_device)
+        attention_mask = torch.ones(input_ids.shape, dtype=torch.long, device=torch_device)
 
-        # (image_size // image_patch // spatial_merge_size) ** 2 = (56 // 14 // 2) ** 2 = 4
-        # Set the 4 first tokens to be image, and ensure that no other tokens are image tokens.
         # Do not change this unless you modified image size or patch size.
-        input_ids[input_ids == self.image_token_index] = self.pad_token_id
-        input_ids[:, :4] = self.image_token_index
+        input_ids[:, -1] = self.pad_token_id
+        input_ids[input_ids == self.video_token_id] = self.pad_token_id
+        input_ids[input_ids == self.image_token_id] = self.pad_token_id
+        input_ids[:, self.num_image_tokens] = self.image_token_id
 
         # Hardcoded image grid size: do not change unless you modified image size or patch size!
-        image_grid_thw = torch.tensor([1, 4, 4]).repeat(self.batch_size, 1)
+        image_grid_thw = torch.tensor([1, 1, 1]).repeat(self.batch_size, 1)
         inputs_dict = {
             "input_ids": input_ids,
             "pixel_values": pixel_values,
