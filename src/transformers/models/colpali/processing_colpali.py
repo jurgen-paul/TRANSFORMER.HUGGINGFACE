@@ -20,7 +20,7 @@
 # limitations under the License.
 
 
-from typing import ClassVar, List, Optional, Union
+from typing import List, Optional, Union
 
 from ...feature_extraction_utils import BatchFeature
 from ...image_utils import ImageInput, is_valid_image, make_flat_list_of_images
@@ -87,6 +87,8 @@ class ColPaliProcessor(ProcessorMixin):
             The tokenizer is a required input.
         chat_template (`str`, *optional*): A Jinja template which will be used to convert lists of messages
             in a chat into a tokenizable string.
+        visual_prompt_prefix (`str`, *optional*): A string that gets tokenized and prepended to the image tokens.
+        query_prefix (`str`, *optional*): A prefix to be used for the query.
     """
 
     attributes = ["image_processor", "tokenizer"]
@@ -94,16 +96,15 @@ class ColPaliProcessor(ProcessorMixin):
     image_processor_class = "SiglipImageProcessor"
     tokenizer_class = ("GemmaTokenizer", "GemmaTokenizerFast")
 
-    visual_prompt_prefix: ClassVar[str] = "Describe the image."
-    query_prefix: ClassVar[str] = "Question: "
-
     def __init__(
         self,
         image_processor=None,
         tokenizer=None,
         chat_template=None,
-        **kwargs,
+        visual_prompt_prefix: str = "Describe the image.",
+        query_prefix: str = "Question: ",
     ):
+        super().__init__(image_processor, tokenizer, chat_template=chat_template)
         if image_processor is None:
             raise ValueError("You need to specify an `image_processor`.")
         if tokenizer is None:
@@ -124,8 +125,8 @@ class ColPaliProcessor(ProcessorMixin):
         tokenizer.add_tokens(EXTRA_TOKENS)
         tokenizer.add_bos_token = False
         tokenizer.add_eos_token = False
-
-        super().__init__(image_processor, tokenizer, chat_template=chat_template)
+        self.visual_prompt_prefix = visual_prompt_prefix
+        self.query_prefix = query_prefix
 
     def __call__(
         self,

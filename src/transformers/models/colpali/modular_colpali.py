@@ -14,7 +14,7 @@
 # limitations under the License.
 
 
-from typing import ClassVar, List, Optional, Union
+from typing import List, Optional, Union
 
 from transformers.models.paligemma.processing_paligemma import (
     IMAGE_TOKEN,
@@ -73,10 +73,21 @@ class ColPaliProcessor(PaliGemmaProcessor):
             The tokenizer is a required input.
         chat_template (`str`, *optional*): A Jinja template which will be used to convert lists of messages
             in a chat into a tokenizable string.
+        visual_prompt_prefix (`str`, *optional*): A string that gets tokenized and prepended to the image tokens.
+        query_prefix (`str`, *optional*): A prefix to be used for the query.
     """
 
-    visual_prompt_prefix: ClassVar[str] = "Describe the image."
-    query_prefix: ClassVar[str] = "Question: "
+    def __init__(
+        self,
+        image_processor=None,
+        tokenizer=None,
+        chat_template=None,
+        visual_prompt_prefix: str = "Describe the image.",
+        query_prefix: str = "Question: ",
+    ):
+        super().__init__(image_processor=image_processor, tokenizer=tokenizer, chat_template=chat_template)
+        self.visual_prompt_prefix = visual_prompt_prefix
+        self.query_prefix = query_prefix
 
     @property
     def query_augmentation_token(self) -> str:
