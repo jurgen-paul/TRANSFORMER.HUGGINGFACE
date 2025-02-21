@@ -236,12 +236,10 @@ class ColPaliProcessor(ProcessorMixin):
 
             if suffix is None:
                 suffix = self.query_augmentation_token * 10
-            texts_query: List[str] = []
 
+            texts_query: List[str] = []
             for query in text:
-                query = self.tokenizer.bos_token + self.query_prefix + query
-                query += suffix  # add suffix (pad tokens)
-                query += "\n"  # make input ISO to PaliGemma's processor
+                query = self.tokenizer.bos_token + self.query_prefix + query + suffix + "\n"
                 texts_query.append(query)
 
             output_kwargs["text_kwargs"]["max_length"] = output_kwargs["text_kwargs"].get("max_length", 50)
