@@ -20,6 +20,7 @@
 # limitations under the License.
 
 
+import warnings
 from dataclasses import dataclass
 from typing import ClassVar, List, Optional, Tuple, Union
 
@@ -179,20 +180,35 @@ class ColQwen2ForRetrieval(ColQwen2PreTrainedModel):
         super().__init__(config)
         self.config = config
         self.vocab_size = config.vlm_config.vocab_size
-
         self.vlm = AutoModelForImageTextToText.from_config(config.vlm_config)
-
         self.embedding_dim = self.config.embedding_dim
         self.embedding_proj_layer = nn.Linear(
             self.config.vlm_config.hidden_size,
             self.embedding_dim,
         )
-
         self._tied_weights_keys = ["vlm.model.embed_tokens.weight", "vlm.lm_head.weight"]
-
         self.padding_side = "left"
-
         self.post_init()
+
+    @classmethod
+    def from_pretrained(
+        cls,
+        *args,
+        device_map: Optional[str] = None,
+        attn_implementation: Optional[str] = None,
+        **kwargs,
+    ):
+        # NOTE: Qwen2VL uses SDPA attention by default, even when device is not set to "cuda".
+        # We need to change the attention implementation to "eager" in this case.
+        if device_map in ["cpu", torch.device("cpu"), "mps", torch.device("mps")]:
+            warnings.warn("Using 'eager' attention implementation for CPU/MPS inference.")
+            attn_implementation = "eager"
+        return super().from_pretrained(
+            *args,
+            device_map=device_map,
+            attn_implementation=attn_implementation,
+            **kwargs,
+        )
 
     def get_input_embeddings(self):
         return self.vlm.model.embed_tokens
