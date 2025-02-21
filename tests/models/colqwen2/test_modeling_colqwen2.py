@@ -317,7 +317,7 @@ class ColQwen2ForRetrievalModelTest(ModelTesterMixin, unittest.TestCase):
 
 @require_torch
 class ColQwen2ModelIntegrationTest(unittest.TestCase):
-    model_name: ClassVar[str] = "vidore/colqwen2-v1.0-hf"
+    model_name: ClassVar[str] = "vidore/colqwen2-v1.0-hf-internal"  # TODO: remove "-internal" before merge
 
     def setUp(self):
         self.processor = ColQwen2Processor.from_pretrained(self.model_name)
@@ -361,14 +361,15 @@ class ColQwen2ModelIntegrationTest(unittest.TestCase):
         # Check if the maximum scores per row are in the diagonal of the matrix score
         self.assertTrue((scores.argmax(axis=1) == torch.arange(len(ds), device=scores.device)).all())
 
-        # # Further validation: fine-grained check, with a hardcoded score from the original implementation
-        # expected_scores = torch.tensor(
-        #     [
-        #         [15.5625, 6.5938, 14.4375],
-        #         [12.2500, 16.2500, 11.0000],
-        #         [15.0625, 11.7500, 21.0000],
-        #     ],
-        #     dtype=scores.dtype,
-        # )
+        # Further validation: fine-grained check, with a hardcoded score from the original implementation
+        # NOTE: Expected scores were obtained using "colpali-engine==0.3.8" on a L4 GPU.
+        expected_scores = torch.tensor(
+            [
+                [16.2500, 7.8750, 14.6250],
+                [9.5625, 17.3750, 10.4375],
+                [14.9375, 10.8750, 20.0000],
+            ],
+            dtype=scores.dtype,
+        )
 
-        # assert torch.allclose(scores, expected_scores, atol=1), f"Expected scores {expected_scores}, got {scores}"
+        assert torch.allclose(scores, expected_scores, atol=1e-3), f"Expected scores {expected_scores}, got {scores}"
