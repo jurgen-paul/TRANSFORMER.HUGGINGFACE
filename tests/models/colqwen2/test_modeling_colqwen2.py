@@ -317,7 +317,7 @@ class ColQwen2ForRetrievalModelTest(ModelTesterMixin, unittest.TestCase):
 
 @require_torch
 class ColQwen2ModelIntegrationTest(unittest.TestCase):
-    model_name: ClassVar[str] = "vidore/colqwen2-v1.0-hf-internal"  # TODO: remove "-internal" before merge
+    model_name: ClassVar[str] = "vidore/colqwen2-1.0-hf-internal"  # TODO: remove "-internal" before merge
 
     def setUp(self):
         self.processor = ColQwen2Processor.from_pretrained(self.model_name)
@@ -365,9 +365,9 @@ class ColQwen2ModelIntegrationTest(unittest.TestCase):
         # NOTE: Expected scores were obtained using "colpali-engine==0.3.8" on a L4 GPU.
         expected_scores = torch.tensor(
             [
-                [16.2500, 7.8750, 14.6250],
-                [9.5625, 17.3750, 10.4375],
-                [14.9375, 10.8750, 20.0000],
+                [16.2500, 7.9062, 14.6250],
+                [9.5000, 17.3750, 10.5625],
+                [15.0625, 10.8750, 20.1250],
             ],
             dtype=scores.dtype,
         )
