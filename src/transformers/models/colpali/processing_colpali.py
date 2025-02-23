@@ -196,6 +196,7 @@ class ColPaliProcessor(ProcessorMixin):
                 raise ValueError("images must be an image, list of images or list of list of images")
 
             texts_doc = [self.visual_prompt_prefix] * len(images)
+            # todo remove this and change preprocessor config if needed
             images = [image.convert("RGB") for image in images]
 
             input_strings = [

@@ -20,8 +20,7 @@
 # limitations under the License.
 
 
-import math
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Union
 
 from ...feature_extraction_utils import BatchFeature
 from ...image_utils import ImageInput, is_valid_image
@@ -47,39 +46,6 @@ class ColQwen2ProcessorKwargs(ProcessingKwargs, total=False):
     }
 
 
-def round_by_factor(number: float, factor: int) -> int:
-    """
-    Returns the closest integer to 'number' that is divisible by 'factor'.
-
-    Args:
-        number (float): The number to round.
-        factor (int): The factor to round to.
-    """
-    return round(number / factor) * factor
-
-
-def ceil_by_factor(number: float, factor: int) -> int:
-    """
-    Returns the smallest integer greater than or equal to 'number' that is divisible by 'factor'.
-
-    Args:
-        number (float): The number to round.
-        factor (int): The factor to round to.
-    """
-    return math.ceil(number / factor) * factor
-
-
-def floor_by_factor(number: float, factor: int) -> int:
-    """
-    Returns the largest integer less than or equal to 'number' that is divisible by 'factor'.
-
-    Args:
-        number (float): The number to round.
-        factor (int): The factor to round to.
-    """
-    return math.floor(number / factor) * factor
-
-
 class ColQwen2Processor(ProcessorMixin):
     r"""
     Constructs a ColQwen2 processor which wraps a Qwen2VLProcessor and special methods to process images and queries, as
@@ -98,8 +64,8 @@ class ColQwen2Processor(ProcessorMixin):
     """
 
     attributes = ["image_processor", "tokenizer"]
-    valid_kwargs = ["chat_template"]
 
+    valid_kwargs = ["chat_template", "visual_prompt_prefix", "query_prefix", "num_image_tokens"]
     image_processor_class = "Qwen2VLImageProcessor"
     tokenizer_class = ("Qwen2Tokenizer", "Qwen2TokenizerFast")
 
@@ -113,6 +79,9 @@ class ColQwen2Processor(ProcessorMixin):
         num_image_tokens: int = 768,
         **kwargs,
     ):
+        # todo: change in the preprocessor config + change logic when https://github.com/huggingface/transformers/pull/36207 is merged.
+        image_processor.max_pixels = num_image_tokens * 28 * 28
+
         super().__init__(image_processor, tokenizer, chat_template=chat_template)
         self.image_token = "<|image_pad|>" if not hasattr(tokenizer, "image_token") else tokenizer.image_token
         self.video_token = "<|video_pad|>" if not hasattr(tokenizer, "video_token") else tokenizer.video_token
@@ -195,9 +164,8 @@ class ColQwen2Processor(ProcessorMixin):
                 raise ValueError("images must be an image, list of images or list of list of images")
 
             texts_doc = [self.visual_prompt_prefix] * len(images)
-            images: List[ImageInput] = [self.smart_resize(image.convert("RGB")) for image in images]
 
-            image_inputs = self.image_processor(images=images, videos=None, **output_kwargs["images_kwargs"])
+            image_inputs = self.image_processor(images=images, **output_kwargs["images_kwargs"])
             image_grid_thw = image_inputs["image_grid_thw"]
 
             if image_grid_thw is not None:
@@ -267,44 +235,17 @@ class ColQwen2Processor(ProcessorMixin):
 
     def batch_decode(self, *args, **kwargs):
         """
-        This method forwards all its arguments to Qwen2TokenizerFast's [`~PreTrainedTokenizer.batch_decode`]. Please
+        This method forwards all its arguments to GemmaTokenizerFast's [`~PreTrainedTokenizer.batch_decode`]. Please
         refer to the docstring of this method for more information.
         """
         return self.tokenizer.batch_decode(*args, **kwargs)
 
     def decode(self, *args, **kwargs):
         """
-        This method forwards all its arguments to Qwen2TokenizerFast's [`~PreTrainedTokenizer.decode`]. Please refer to
+        This method forwards all its arguments to GemmaTokenizerFast's [`~PreTrainedTokenizer.decode`]. Please refer to
         the docstring of this method for more information.
         """
         return self.tokenizer.decode(*args, **kwargs)
-
-    def post_process_image_text_to_text(
-        self, generated_outputs, skip_special_tokens=True, clean_up_tokenization_spaces=False, **kwargs
-    ):
-        """
-        Post-process the output of the model to decode the text.
-
-        Args:
-            generated_outputs (`torch.Tensor` or `np.ndarray`):
-                The output of the model `generate` function. The output is expected to be a tensor of shape `(batch_size, sequence_length)`
-                or `(sequence_length,)`.
-            skip_special_tokens (`bool`, *optional*, defaults to `True`):
-                Whether or not to remove special tokens in the output. Argument passed to the tokenizer's `batch_decode` method.
-            Clean_up_tokenization_spaces (`bool`, *optional*, defaults to `False`):
-                Whether or not to clean up the tokenization spaces. Argument passed to the tokenizer's `batch_decode` method.
-            **kwargs:
-                Additional arguments to be passed to the tokenizer's `batch_decode method`.
-
-        Returns:
-            `List[str]`: The decoded text.
-        """
-        return self.tokenizer.batch_decode(
-            generated_outputs,
-            skip_special_tokens=skip_special_tokens,
-            clean_up_tokenization_spaces=clean_up_tokenization_spaces,
-            **kwargs,
-        )
 
     @property
     def model_input_names(self):
@@ -320,67 +261,6 @@ class ColQwen2Processor(ProcessorMixin):
         Query augmentation buffers are used as reasoning buffers during inference.
         """
         return self.tokenizer.pad_token
-
-    @staticmethod
-    def smart_resize_helper(
-        width: int,
-        height: int,
-        factor: int,
-        max_ratio: int,
-        min_pixels: int,
-        max_pixels: int,
-    ) -> Tuple[int, int]:
-        """
-        Returns the image size so that the following conditions are met:
-        1. Both dimensions (height and width) are divisible by 'factor'.
-        2. The total number of pixels is within the range ['min_pixels', 'max_pixels'].
-        3. The aspect ratio of the image is maintained as closely as possible.
-
-        Args:
-            width (int): The width of the image.
-            height (int): The height of the image.
-            factor (int): The factor to round to.
-            max_ratio (int): The maximum aspect ratio allowed.
-            min_pixels (int): The minimum number of pixels allowed.
-            max_pixels (int): The maximum number of pixels allowed.
-        """
-
-        if max(height, width) / min(height, width) > max_ratio:
-            raise ValueError(
-                f"Absolute aspect ratio must be smaller than {max_ratio}, "
-                f"got {max(height, width) / min(height, width)}"
-            )
-
-        height_new = max(factor, round_by_factor(height, factor))
-        width_new = max(factor, round_by_factor(width, factor))
-
-        if height_new * width_new > max_pixels:
-            beta = math.sqrt((height * width) / max_pixels)
-            height_new = floor_by_factor(height / beta, factor)
-            width_new = floor_by_factor(width / beta, factor)
-        elif height_new * width_new < min_pixels:
-            beta = math.sqrt(min_pixels / (height * width))
-            height_new = ceil_by_factor(height * beta, factor)
-            width_new = ceil_by_factor(width * beta, factor)
-        else:
-            pass
-
-        return height_new, width_new
-
-    def smart_resize(self, image: "PIL.Image.Image") -> "PIL.Image.Image":
-        """
-        Resize and convert the image to the required format.
-        """
-        image_size = image.size
-        new_height, new_width = self.smart_resize_helper(
-            width=image_size[0],
-            height=image_size[1],
-            factor=self.factor,
-            max_ratio=self.max_ratio,
-            min_pixels=self.min_pixels,
-            max_pixels=self.max_pixels,
-        )
-        return image.resize((new_width, new_height))
 
     def process_images(
         self,

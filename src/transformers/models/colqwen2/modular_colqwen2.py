@@ -14,13 +14,12 @@
 # limitations under the License.
 
 
-import math
 import warnings
 from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union
 
-from transformers.models.qwen2_vl.processing_qwen2_vl import Qwen2VLProcessor
+from transformers.models.colpali.processing_colpali import ColPaliProcessor
 
 from ...cache_utils import Cache
 from ...configuration_utils import PretrainedConfig
@@ -156,40 +155,7 @@ class ColQwen2ProcessorKwargs(ProcessingKwargs, total=False):
     }
 
 
-def round_by_factor(number: float, factor: int) -> int:
-    """
-    Returns the closest integer to 'number' that is divisible by 'factor'.
-
-    Args:
-        number (float): The number to round.
-        factor (int): The factor to round to.
-    """
-    return round(number / factor) * factor
-
-
-def ceil_by_factor(number: float, factor: int) -> int:
-    """
-    Returns the smallest integer greater than or equal to 'number' that is divisible by 'factor'.
-
-    Args:
-        number (float): The number to round.
-        factor (int): The factor to round to.
-    """
-    return math.ceil(number / factor) * factor
-
-
-def floor_by_factor(number: float, factor: int) -> int:
-    """
-    Returns the largest integer less than or equal to 'number' that is divisible by 'factor'.
-
-    Args:
-        number (float): The number to round.
-        factor (int): The factor to round to.
-    """
-    return math.floor(number / factor) * factor
-
-
-class ColQwen2Processor(Qwen2VLProcessor):
+class ColQwen2Processor(ColPaliProcessor):
     r"""
     Constructs a ColQwen2 processor which wraps a Qwen2VLProcessor and special methods to process images and queries, as
     well as to compute the late-interaction retrieval score.
@@ -206,7 +172,9 @@ class ColQwen2Processor(Qwen2VLProcessor):
             in a chat into a tokenizable string.
     """
 
+    valid_kwargs = ["chat_template", "visual_prompt_prefix", "query_prefix", "num_image_tokens"]
     image_processor_class = "Qwen2VLImageProcessor"
+    tokenizer_class = ("Qwen2Tokenizer", "Qwen2TokenizerFast")
 
     def __init__(
         self,
@@ -218,7 +186,12 @@ class ColQwen2Processor(Qwen2VLProcessor):
         num_image_tokens: int = 768,
         **kwargs,
     ):
-        super().__init__(image_processor, tokenizer, chat_template=chat_template, **kwargs)
+        # todo: change in the preprocessor config + change logic when https://github.com/huggingface/transformers/pull/36207 is merged.
+        image_processor.max_pixels = num_image_tokens * 28 * 28
+
+        ColPaliProcessor().__init__(image_processor, tokenizer, chat_template=chat_template)
+        self.image_token = "<|image_pad|>" if not hasattr(tokenizer, "image_token") else tokenizer.image_token
+        self.video_token = "<|video_pad|>" if not hasattr(tokenizer, "video_token") else tokenizer.video_token
 
         self.visual_prompt_prefix = visual_prompt_prefix
         self.query_prefix = query_prefix
@@ -298,9 +271,8 @@ class ColQwen2Processor(Qwen2VLProcessor):
                 raise ValueError("images must be an image, list of images or list of list of images")
 
             texts_doc = [self.visual_prompt_prefix] * len(images)
-            images: List[ImageInput] = [self.smart_resize(image.convert("RGB")) for image in images]
 
-            image_inputs = self.image_processor(images=images, videos=None, **output_kwargs["images_kwargs"])
+            image_inputs = self.image_processor(images=images, **output_kwargs["images_kwargs"])
             image_grid_thw = image_inputs["image_grid_thw"]
 
             if image_grid_thw is not None:
@@ -367,76 +339,6 @@ class ColQwen2Processor(Qwen2VLProcessor):
             )
 
             return batch_query
-
-    @property
-    def query_augmentation_token(self) -> str:
-        """
-        Return the query augmentation token.
-
-        Query augmentation buffers are used as reasoning buffers during inference.
-        """
-        return self.tokenizer.pad_token
-
-    @staticmethod
-    def smart_resize_helper(
-        width: int,
-        height: int,
-        factor: int,
-        max_ratio: int,
-        min_pixels: int,
-        max_pixels: int,
-    ) -> Tuple[int, int]:
-        """
-        Returns the image size so that the following conditions are met:
-        1. Both dimensions (height and width) are divisible by 'factor'.
-        2. The total number of pixels is within the range ['min_pixels', 'max_pixels'].
-        3. The aspect ratio of the image is maintained as closely as possible.
-
-        Args:
-            width (int): The width of the image.
-            height (int): The height of the image.
-            factor (int): The factor to round to.
-            max_ratio (int): The maximum aspect ratio allowed.
-            min_pixels (int): The minimum number of pixels allowed.
-            max_pixels (int): The maximum number of pixels allowed.
-        """
-
-        if max(height, width) / min(height, width) > max_ratio:
-            raise ValueError(
-                f"Absolute aspect ratio must be smaller than {max_ratio}, "
-                f"got {max(height, width) / min(height, width)}"
-            )
-
-        height_new = max(factor, round_by_factor(height, factor))
-        width_new = max(factor, round_by_factor(width, factor))
-
-        if height_new * width_new > max_pixels:
-            beta = math.sqrt((height * width) / max_pixels)
-            height_new = floor_by_factor(height / beta, factor)
-            width_new = floor_by_factor(width / beta, factor)
-        elif height_new * width_new < min_pixels:
-            beta = math.sqrt(min_pixels / (height * width))
-            height_new = ceil_by_factor(height * beta, factor)
-            width_new = ceil_by_factor(width * beta, factor)
-        else:
-            pass
-
-        return height_new, width_new
-
-    def smart_resize(self, image: "PIL.Image.Image") -> "PIL.Image.Image":
-        """
-        Resize and convert the image to the required format.
-        """
-        image_size = image.size
-        new_height, new_width = self.smart_resize_helper(
-            width=image_size[0],
-            height=image_size[1],
-            factor=self.factor,
-            max_ratio=self.max_ratio,
-            min_pixels=self.min_pixels,
-            max_pixels=self.max_pixels,
-        )
-        return image.resize((new_width, new_height))
 
     def process_images(
         self,
@@ -506,70 +408,6 @@ class ColQwen2Processor(Qwen2VLProcessor):
               `None`).
         """
         return self.__call__(text=text, **kwargs)
-
-    def score_retrieval(
-        self,
-        query_embeddings: Union["torch.Tensor", List["torch.Tensor"]],
-        passage_embeddings: Union["torch.Tensor", List["torch.Tensor"]],
-        batch_size: int = 128,
-        output_dtype: Optional["torch.dtype"] = None,
-        output_device: Union["torch.device", str] = "cpu",
-    ) -> "torch.Tensor":
-        """
-        Compute the late-interaction/MaxSim score (ColBERT-like) for the given multi-vector
-        query embeddings (`qs`) and passage embeddings (`ps`). For ColQwen2, a passage is the
-        image of a document page.
-
-        Because the embedding tensors are multi-vector and can thus have different shapes, they
-        should be fed as:
-        (1) a list of tensors, where the i-th tensor is of shape (sequence_length_i, embedding_dim)
-        (2) a single tensor of shape (n_passages, max_sequence_length, embedding_dim) -> usually
-            obtained by padding the list of tensors.
-
-        Args:
-            query_embeddings (`Union[torch.Tensor, List[torch.Tensor]`): Query embeddings.
-            passage_embeddings (`Union[torch.Tensor, List[torch.Tensor]`): Passage embeddings.
-            batch_size (`int`, *optional*, defaults to 128): Batch size for computing scores.
-            output_dtype (`torch.dtype`, *optional*, defaults to `torch.float32`): The dtype of the output tensor.
-                If `None`, the dtype of the input embeddings is used.
-            output_device (`torch.device` or `str`, *optional*, defaults to "cpu"): The device of the output tensor.
-
-        Returns:
-            `torch.Tensor`: A tensor of shape `(n_queries, n_passages)` containing the scores. The score
-            tensor is saved on the "cpu" device.
-        """
-
-        if len(query_embeddings) == 0:
-            raise ValueError("No queries provided")
-        if len(passage_embeddings) == 0:
-            raise ValueError("No passages provided")
-
-        if query_embeddings[0].device != passage_embeddings[0].device:
-            raise ValueError("Queries and passages must be on the same device")
-
-        if query_embeddings[0].dtype != passage_embeddings[0].dtype:
-            raise ValueError("Queries and passages must have the same dtype")
-
-        if output_dtype is None:
-            output_dtype = query_embeddings[0].dtype
-
-        scores: List[torch.Tensor] = []
-
-        for i in range(0, len(query_embeddings), batch_size):
-            batch_scores: List[torch.Tensor] = []
-            batch_queries = torch.nn.utils.rnn.pad_sequence(
-                query_embeddings[i : i + batch_size], batch_first=True, padding_value=0
-            )
-            for j in range(0, len(passage_embeddings), batch_size):
-                batch_passages = torch.nn.utils.rnn.pad_sequence(
-                    passage_embeddings[j : j + batch_size], batch_first=True, padding_value=0
-                )
-                batch_scores.append(
-                    torch.einsum("bnd,csd->bcns", batch_queries, batch_passages).max(dim=3)[0].sum(dim=2)
-                )
-            scores.append(torch.cat(batch_scores, dim=1).to(output_dtype).to(output_device))
-
-        return torch.cat(scores, dim=0)
 
 
 @add_start_docstrings(
