@@ -273,16 +273,17 @@ class ColQwen2ForRetrieval(ColQwen2PreTrainedModel):
         r"""
         Returns:
         ```"""
-        # The following code is a hack to make sure the scatter in DDP is done correctly when training on multiple GPUs.
+        if pixel_values is not None:
+            pixel_values = pixel_values.to(dtype=self.dtype)
+
+        # Handle the custom "pixel_values" input obtained with `ColQwen2Processor` through unpadding
         if pixel_values is not None and image_grid_thw is not None:
-            offsets = image_grid_thw[:, 1] * image_grid_thw[:, 2]
+            offsets = image_grid_thw[:, 1] * image_grid_thw[:, 2]  # (batch_size,)
             pixel_values = torch.cat(
-                [pv[:o] for pv, o in zip(pixel_values, offsets)],
+                [pixel_sequence[:offset] for pixel_sequence, offset in zip(pixel_values, offsets)],
                 dim=0,
             )
 
-        if pixel_values is not None:
-            pixel_values = pixel_values.to(dtype=self.dtype)
         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
 
         output_hidden_states = (
