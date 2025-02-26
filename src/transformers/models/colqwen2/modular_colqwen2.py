@@ -713,7 +713,7 @@ class ColQwen2ForRetrieval(ColQwen2PreTrainedModel):
         new_num_tokens: Optional[int] = None,
         pad_to_multiple_of: Optional[int] = None,
         mean_resizing: bool = True,
-    ) -> nn.Embedding:
+    ) -> "torch.nn.Embedding":
         model_embeds = self.vlm.resize_token_embeddings(
             new_num_tokens=new_num_tokens,
             pad_to_multiple_of=pad_to_multiple_of,
