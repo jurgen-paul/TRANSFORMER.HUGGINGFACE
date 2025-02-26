@@ -61,6 +61,9 @@ class ColQwen2Processor(ProcessorMixin):
             The tokenizer is a required input.
         chat_template (`str`, *optional*): A Jinja template which will be used to convert lists of messages
             in a chat into a tokenizable string.
+        visual_prompt_prefix (`str`, *optional*): A string that gets tokenized and prepended to the image tokens.
+        query_prefix (`str`, *optional*): A prefix to be used for the query.
+        max_num_visual_tokens (`int`, *optional*): : The maximum number of visual tokens that can be processed by the model.
     """
 
     attributes = ["image_processor", "tokenizer"]
@@ -76,12 +79,9 @@ class ColQwen2Processor(ProcessorMixin):
         chat_template=None,
         visual_prompt_prefix: str = "<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>Describe the image.<|im_end|><|endoftext|>",
         query_prefix: str = "Query: ",
-        num_image_tokens: int = 768,
+        max_num_visual_tokens: int = 768,
         **kwargs,
     ):
-        # todo: change in the preprocessor config + change logic when https://github.com/huggingface/transformers/pull/36207 is merged.
-        image_processor.max_pixels = num_image_tokens * 28 * 28
-
         super().__init__(image_processor, tokenizer, chat_template=chat_template)
         self.image_token = "<|image_pad|>" if not hasattr(tokenizer, "image_token") else tokenizer.image_token
         self.video_token = "<|video_pad|>" if not hasattr(tokenizer, "video_token") else tokenizer.video_token
@@ -91,10 +91,13 @@ class ColQwen2Processor(ProcessorMixin):
 
         self.tokenizer.padding_side = "left"
 
-        self.min_pixels = 4 * 28 * 28
-        self.max_pixels = num_image_tokens * 28 * 28
+        self.max_num_visual_tokens = max_num_visual_tokens
         self.factor = 28
-        self.max_ratio = 200
+        self.min_pixels = 4 * 28 * 28
+        self.max_pixels = self.max_num_visual_tokens * 28 * 28
+
+        # TODO: change in the preprocessor config + change logic when https://github.com/huggingface/transformers/pull/36207 is merged.
+        image_processor.max_pixels = self.max_num_visual_tokens * 28 * 28
 
     def __call__(
         self,
