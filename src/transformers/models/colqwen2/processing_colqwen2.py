@@ -187,20 +187,18 @@ class ColQwen2Processor(ProcessorMixin):
 
             return_data = BatchFeature(data={**text_inputs, **image_inputs})
 
-            # NOTE: Make sure the scatter operation in DDP is done correctly when training on multiple GPUs.
-            offsets = return_data["image_grid_thw"][:, 1] * return_data["image_grid_thw"][:, 2]
+            # NOTE: The following adjustment ensures correct behavior with DDP on multiple GPUs.
+            offsets = return_data["image_grid_thw"][:, 1] * return_data["image_grid_thw"][:, 2]  # (batch_size,)
 
-            # Separate pixel_values for each image.
-            pixel_values = torch.split(return_data["pixel_values"], offsets.tolist())
+            # Split the pixel_values tensor into a list of tensors, one per image
+            pixel_values = list(
+                torch.split(return_data["pixel_values"], offsets.tolist())
+            )  # [(num_patches_image_0, pixel_values), ..., (num_patches_image_n, pixel_values)]
 
-            # Pad pixel_values to the same sequence length to later stack it into a single tensor.
-            max_length = max([len(pixel_value) for pixel_value in pixel_values])
-
-            pixel_values = [
-                torch.cat([pv, torch.zeros((max_length - len(pv), pv.shape[1]), dtype=pv.dtype, device=pv.device)])
-                for pv in pixel_values
-            ]
-            return_data["pixel_values"] = torch.stack(pixel_values)
+            # Pad the list of pixel_value tensors to the same length along the sequence dimension
+            return_data["pixel_values"] = torch.nn.utils.rnn.pad_sequence(
+                pixel_values, batch_first=True
+            )  # (batch_size, max_num_patches, pixel_values)
 
             if return_token_type_ids:
                 labels = return_data["input_ids"].masked_fill(return_data["token_type_ids"] == 0, -100)
@@ -222,8 +220,6 @@ class ColQwen2Processor(ProcessorMixin):
             for query in text:
                 augmented_query = self.query_prefix + query + suffix
                 texts_query.append(augmented_query)
-
-            output_kwargs["text_kwargs"]["max_length"] = output_kwargs["text_kwargs"].get("max_length", 50)
 
             batch_query = self.tokenizer(
                 texts_query,
