@@ -14,12 +14,10 @@
 # limitations under the License.
 
 
-from copy import deepcopy
-from typing import Any, Dict, List, Union
+from typing import List, Union
 
 from transformers.models.colpali.processing_colpali import ColPaliProcessor
 
-from ...configuration_utils import PretrainedConfig
 from ...feature_extraction_utils import BatchFeature
 from ...image_utils import ImageInput, is_valid_image
 from ...processing_utils import (
@@ -34,7 +32,6 @@ from ...utils import (
     is_torch_available,
     logging,
 )
-from ..auto import CONFIG_MAPPING
 
 
 if is_torch_available():
@@ -42,77 +39,6 @@ if is_torch_available():
 
 
 logger = logging.get_logger(__name__)
-
-_CONFIG_FOR_DOC = "ColQwen2Config"
-
-
-class ColQwen2Config(PretrainedConfig):
-    r"""
-    Configuration class to store the configuration of a [`ColQ2en2ForRetrieval`]. It is used to instantiate an instance
-    of `ColQwen2ForRetrieval` according to the specified arguments, defining the model architecture following the methodology
-    from the "ColPali: Efficient Document Retrieval with Vision Language Models" paper.
-
-    Configuration objects inherit from [`PretrainedConfig`] and can be used to control the model outputs. Read the
-    documentation from [`PretrainedConfig`] for more information.
-
-    Args:
-        vlm_config (`PretrainedConfig`, *optional*):
-            Configuration of the VLM backbone model.
-        embedding_dim (`int`, *optional*, defaults to 128):
-            Dimension of the multi-vector embeddings produced by the model.
-
-    Example:
-
-    ```python
-    from transformers.models.colqwen2 import ColQwen2Config, ColQwen2ForRetrieval
-
-    config = ColQwen2Config()
-    model = ColQwen2ForRetrieval(config)
-    ```
-    """
-
-    model_type = "colqwen2"
-    sub_configs: Dict[str, Any] = {"vlm_config": PretrainedConfig}
-
-    def __init__(
-        self,
-        vlm_config=None,
-        embedding_dim: int = 128,
-        **kwargs,
-    ):
-        if vlm_config is None:
-            vlm_config = CONFIG_MAPPING["qwen2_vl"]()
-            logger.info(
-                "`vlm_config` is `None`. Initializing `vlm_config` with the `Qwen2VLConfig` with default values."
-            )
-        elif isinstance(vlm_config, dict):
-            vlm_config = deepcopy(vlm_config)
-            if "model_type" not in vlm_config:
-                raise KeyError(
-                    "The `model_type` key is missing in the `vlm_config` dictionary. Please provide the model type."
-                )
-            elif vlm_config["model_type"] != "qwen2_vl":
-                raise ValueError(
-                    f"Invalid model type for `vlm_config`. Expected `qwen2_vl`, but got {vlm_config['model_type']}."
-                )
-            vlm_config = CONFIG_MAPPING["qwen2_vl"](**vlm_config)
-        elif isinstance(vlm_config, PretrainedConfig):
-            if vlm_config.model_type != "qwen2_vl":
-                raise ValueError(
-                    f"Invalid model type for `vlm_config`. Expected `qwen2_vl`, but got {vlm_config.model_type}."
-                )
-            vlm_config = vlm_config
-        else:
-            raise TypeError(
-                f"Invalid type for `vlm_config`. Expected `PretrainedConfig`, `dict`, or `None`, but got {type(vlm_config)}."
-            )
-
-        self.vlm_config = vlm_config
-        self.embedding_dim = embedding_dim
-        super().__init__(**kwargs)
-
-    def get_text_config(self, decoder=False) -> PretrainedConfig:
-        return self.vlm_config
 
 
 class ColQwen2ProcessorKwargs(ProcessingKwargs, total=False):
@@ -383,7 +309,4 @@ class ColQwen2Processor(ColPaliProcessor):
         return self.__call__(text=text, **kwargs)
 
 
-__all__ = [
-    "ColQwen2Config",
-    "ColQwen2Processor",
-]
+__all__ = ["ColQwen2Processor"]
