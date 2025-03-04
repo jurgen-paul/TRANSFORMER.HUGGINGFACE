@@ -1531,6 +1531,7 @@ else:
             "MODEL_FOR_IMAGE_TO_IMAGE_MAPPING",
             "MODEL_FOR_INSTANCE_SEGMENTATION_MAPPING",
             "MODEL_FOR_KEYPOINT_DETECTION_MAPPING",
+            "MODEL_FOR_KEYPOINT_MATCHING_MAPPING",
             "MODEL_FOR_MASKED_IMAGE_MODELING_MAPPING",
             "MODEL_FOR_MASKED_LM_MAPPING",
             "MODEL_FOR_MASK_GENERATION_MAPPING",
@@ -1574,6 +1575,7 @@ else:
             "AutoModelForImageToImage",
             "AutoModelForInstanceSegmentation",
             "AutoModelForKeypointDetection",
+            "AutoModelForKeypointMatching",
             "AutoModelForMaskedImageModeling",
             "AutoModelForMaskedLM",
             "AutoModelForMaskGeneration",
@@ -2293,6 +2295,7 @@ else:
     )
     _import_structure["models.efficientloftr"].extend(
         [
+            "EfficientLoFTRModel",
             "EfficientLoFTRForKeypointMatching",
             "EfficientLoFTRPreTrainedModel",
         ]
@@ -6724,6 +6727,7 @@ if TYPE_CHECKING:
             MODEL_FOR_IMAGE_TO_IMAGE_MAPPING,
             MODEL_FOR_INSTANCE_SEGMENTATION_MAPPING,
             MODEL_FOR_KEYPOINT_DETECTION_MAPPING,
+            MODEL_FOR_KEYPOINT_MATCHING_MAPPING,
             MODEL_FOR_MASK_GENERATION_MAPPING,
             MODEL_FOR_MASKED_IMAGE_MODELING_MAPPING,
             MODEL_FOR_MASKED_LM_MAPPING,
@@ -6767,6 +6771,7 @@ if TYPE_CHECKING:
             AutoModelForImageToImage,
             AutoModelForInstanceSegmentation,
             AutoModelForKeypointDetection,
+            AutoModelForKeypointMatching,
             AutoModelForMaskedImageModeling,
             AutoModelForMaskedLM,
             AutoModelForMaskGeneration,
@@ -7344,7 +7349,11 @@ if TYPE_CHECKING:
             DPTModel,
             DPTPreTrainedModel,
         )
-        from .models.efficientloftr import EfficientLoFTRForKeypointMatching, EfficientLoFTRPreTrainedModel
+        from .models.efficientloftr import (
+            EfficientLoFTRForKeypointMatching,
+            EfficientLoFTRModel,
+            EfficientLoFTRPreTrainedModel,
+        )
         from .models.efficientnet import (
             EfficientNetForImageClassification,
             EfficientNetModel,
