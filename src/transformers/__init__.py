@@ -331,6 +331,7 @@ _import_structure = {
         "CTRLTokenizer",
     ],
     "models.cvt": ["CvtConfig"],
+    "models.d_fine": ["DFineConfig", "DFineResNetConfig"],
     "models.dab_detr": ["DabDetrConfig"],
     "models.dac": ["DacConfig", "DacFeatureExtractor"],
     "models.data2vec": [
@@ -405,7 +406,6 @@ _import_structure = {
     "models.depth_anything": ["DepthAnythingConfig"],
     "models.depth_pro": ["DepthProConfig"],
     "models.detr": ["DetrConfig"],
-    "models.d_fine": ["DFineConfig", "DFineResNetConfig"],
     "models.dialogpt": [],
     "models.diffllama": ["DiffLlamaConfig"],
     "models.dinat": ["DinatConfig"],
@@ -1934,6 +1934,15 @@ else:
             "CvtPreTrainedModel",
         ]
     )
+    _import_structure["models.d_fine"].extend(
+        [
+            "DFineForObjectDetection",
+            "DFineModel",
+            "DFinePreTrainedModel",
+            "DFineResNetBackbone",
+            "DFineResNetPreTrainedModel",
+        ]
+    )
     _import_structure["models.dab_detr"].extend(
         [
             "DabDetrForObjectDetection",
@@ -2212,15 +2221,6 @@ else:
             "DepthProForDepthEstimation",
             "DepthProModel",
             "DepthProPreTrainedModel",
-        ]
-    )
-    _import_structure["models.d_fine"].extend(
-        [
-            "DFineForObjectDetection",
-            "DFineModel",
-            "DFinePreTrainedModel",
-            "DFineResNetBackbone",
-            "DFineResNetPreTrainedModel",
         ]
     )
     _import_structure["models.detr"].extend(
