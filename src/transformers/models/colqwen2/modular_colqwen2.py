@@ -103,7 +103,8 @@ class ColQwen2Processor(ColPaliProcessor):
         self.max_pixels = self.max_num_visual_tokens * 28 * 28
 
         # TODO: change in the preprocessor config + change logic when https://github.com/huggingface/transformers/pull/36207 is merged.
-        image_processor.max_pixels = self.max_num_visual_tokens * 28 * 28
+        self.image_processor.min_pixels = self.min_pixels
+        self.image_processor.max_pixels = self.max_pixels
 
     def __call__(
         self,
