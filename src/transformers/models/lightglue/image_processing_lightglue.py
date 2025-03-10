@@ -365,6 +365,7 @@ class LightGlueImageProcessor(BaseImageProcessor):
             `List[Dict]`: A list of dictionaries, each dictionary containing the keypoints in the first and second image
             of the pair, the matching scores and the matching indices.
         """
+        requires_backends(self, ["torch"])
         if outputs.mask.shape[0] != len(target_sizes):
             raise ValueError("Make sure that you pass in as many target sizes as the batch dimension of the mask")
         if not all(len(target_size) == 2 for target_size in target_sizes):
