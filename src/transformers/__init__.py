@@ -2009,6 +2009,7 @@ else:
             "DeepseekV2ForCausalLM",
             "DeepseekV2Model",
             "DeepseekV2PreTrainedModel",
+            "DeepseekV2ForSequenceClassification",
         ]
     )
     _import_structure["models.deformable_detr"].extend(
@@ -7123,6 +7124,7 @@ if TYPE_CHECKING:
         )
         from .models.deepseek_v2 import (
             DeepseekV2ForCausalLM,
+            DeepseekV2ForSequenceClassification,
             DeepseekV2Model,
             DeepseekV2PreTrainedModel,
         )
