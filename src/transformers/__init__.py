@@ -2296,8 +2296,8 @@ else:
     )
     _import_structure["models.efficientloftr"].extend(
         [
-            "EfficientLoFTRModel",
             "EfficientLoFTRForKeypointMatching",
+            "EfficientLoFTRModel",
             "EfficientLoFTRPreTrainedModel",
         ]
     )
