@@ -3235,9 +3235,9 @@ class ModelTesterMixin:
         for model_class in self.all_model_classes:
             model = model_class(config)
             num_params = model.num_parameters()
-            assert (
-                num_params < 1000000
-            ), f"{model_class} is too big for the common tests ({num_params})! It should have 1M max."
+            assert num_params < 1000000, (
+                f"{model_class} is too big for the common tests ({num_params})! It should have 1M max."
+            )
 
     @require_flash_attn
     @require_torch_gpu
@@ -4204,7 +4204,7 @@ class ModelTesterMixin:
     @require_torch_gpu
     @mark.flash_attn_test
     @slow
-    def test_flash_attention_2_padding_matches_padding_free_with_position_ids_from_flat_collator(self):
+    def test_flash_attention_2_padding_matches_padding_free_with_position_ids_and_fa_kwargs(self):
         if not self.has_attentions:
             self.skipTest(reason="Model architecture does not support attentions")
 
@@ -4256,10 +4256,10 @@ class ModelTesterMixin:
                     for i, a in zip(inputs_dict["input_ids"], inputs_dict["attention_mask"])
                 ]
 
+                # add position_ids + fa_kwargs
                 data_collator = DataCollatorWithFlattening(return_tensors="pt", return_flash_attn_kwargs=True)
                 batch = data_collator(features)
                 batch_cuda = {k: t.cuda() for k, t in batch.items()}
-                # add position_ids
 
                 res_padded = model(**inputs_dict)
                 res_padfree = model(**batch_cuda)
