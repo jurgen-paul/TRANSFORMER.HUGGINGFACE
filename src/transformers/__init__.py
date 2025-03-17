@@ -4865,6 +4865,8 @@ except OptionalDependencyNotAvailable:
 else:
     _import_structure["models.musicgen_melody"].append("MusicgenMelodyFeatureExtractor")
     _import_structure["models.musicgen_melody"].append("MusicgenMelodyProcessor")
+    _import_structure["models.granite_speech"].append("GraniteSpeechFeatureExtractor")
+    _import_structure["models.granite_speech"].append("GraniteSpeechProcessor")
 
 
 # FLAX-backed objects
