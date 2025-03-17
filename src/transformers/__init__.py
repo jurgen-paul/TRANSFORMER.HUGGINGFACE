@@ -500,6 +500,11 @@ _import_structure = {
     "models.granite": ["GraniteConfig"],
     "models.granitemoe": ["GraniteMoeConfig"],
     "models.granitemoeshared": ["GraniteMoeSharedConfig"],
+    "models.granite_speech": [
+        "GraniteSpeechEncoderConfig",
+        "GraniteSpeechProjectorConfig",
+        "GraniteSpeechConfig",
+    ],
     "models.grounding_dino": [
         "GroundingDinoConfig",
         "GroundingDinoProcessor",
@@ -2572,6 +2577,11 @@ else:
             "GraniteMoeSharedForCausalLM",
             "GraniteMoeSharedModel",
             "GraniteMoeSharedPreTrainedModel",
+        ]
+    )
+    _import_structure["models.granite_speech"].extend(
+        [
+            "GraniteSpeechForConditionalGeneration",
         ]
     )
     _import_structure["models.grounding_dino"].extend(
@@ -9362,6 +9372,7 @@ if TYPE_CHECKING:
         from .utils.dummy_torchaudio_objects import *
     else:
         from .models.musicgen_melody import MusicgenMelodyFeatureExtractor, MusicgenMelodyProcessor
+        from .models.granite_speech import GraniteSpeechFeatureExtractor, GraniteSpeechProcessor
     try:
         if not is_flax_available():
             raise OptionalDependencyNotAvailable()
