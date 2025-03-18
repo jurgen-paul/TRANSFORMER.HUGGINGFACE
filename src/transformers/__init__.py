@@ -7615,6 +7615,7 @@ if TYPE_CHECKING:
         )
         from .models.hgnet_v2 import (
             HGNetV2Backbone,
+            HGNetV2PreTrainedModel,
         )
         from .models.hiera import (
             HieraBackbone,
