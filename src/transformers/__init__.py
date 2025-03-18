@@ -332,7 +332,7 @@ _import_structure = {
     ],
     "models.cvt": ["CvtConfig"],
     "models.d_fine": ["DFineConfig"],
-    "models.d_fine_resnet": ["DFineResNetConfig"],
+    "models.hgnet_v2": ["HGNetV2Config"],
     "models.dab_detr": ["DabDetrConfig"],
     "models.dac": ["DacConfig", "DacFeatureExtractor"],
     "models.data2vec": [
@@ -1942,10 +1942,10 @@ else:
             "DFinePreTrainedModel",
         ]
     )
-    _import_structure["models.d_fine_resnet"].extend(
+    _import_structure["models.hgnet_v2"].extend(
         [
-            "DFineResNetBackbone",
-            "DFineResNetPreTrainedModel",
+            "HGNetV2Backbone",
+            "HGNetV2PreTrainedModel",
         ]
     )
     _import_structure["models.dab_detr"].extend(
@@ -5501,7 +5501,6 @@ if TYPE_CHECKING:
     )
     from .models.cvt import CvtConfig
     from .models.d_fine import DFineConfig
-    from .models.d_fine_resnet import DFineResNetConfig
     from .models.dab_detr import (
         DabDetrConfig,
     )
@@ -5700,6 +5699,7 @@ if TYPE_CHECKING:
     )
     from .models.helium import HeliumConfig
     from .models.herbert import HerbertTokenizer
+    from .models.hgnet_v2 import HGNetV2Config
     from .models.hiera import HieraConfig
     from .models.hubert import HubertConfig
     from .models.ibert import IBertConfig
@@ -7080,9 +7080,6 @@ if TYPE_CHECKING:
             DFineModel,
             DFinePreTrainedModel,
         )
-        from .models.d_fine_resnet import (
-            DFineResNetBackbone,
-        )
         from .models.dab_detr import (
             DabDetrForObjectDetection,
             DabDetrModel,
@@ -7615,6 +7612,9 @@ if TYPE_CHECKING:
             HeliumForTokenClassification,
             HeliumModel,
             HeliumPreTrainedModel,
+        )
+        from .models.hgnet_v2 import (
+            HGNetV2Backbone,
         )
         from .models.hiera import (
             HieraBackbone,

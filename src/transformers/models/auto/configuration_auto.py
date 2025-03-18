@@ -81,7 +81,6 @@ CONFIG_MAPPING_NAMES = OrderedDict(
         ("ctrl", "CTRLConfig"),
         ("cvt", "CvtConfig"),
         ("d_fine", "DFineConfig"),
-        ("d_fine_resnet", "DFineResNetConfig"),
         ("dab-detr", "DabDetrConfig"),
         ("dac", "DacConfig"),
         ("data2vec-audio", "Data2VecAudioConfig"),
@@ -148,6 +147,7 @@ CONFIG_MAPPING_NAMES = OrderedDict(
         ("grounding-dino", "GroundingDinoConfig"),
         ("groupvit", "GroupViTConfig"),
         ("helium", "HeliumConfig"),
+        ("hgnet_v2", "HGNetV2Config"),
         ("hiera", "HieraConfig"),
         ("hubert", "HubertConfig"),
         ("ibert", "IBertConfig"),
@@ -414,7 +414,6 @@ MODEL_NAMES_MAPPING = OrderedDict(
         ("ctrl", "CTRL"),
         ("cvt", "CvT"),
         ("d_fine", "D-FINE"),
-        ("d_fine_resnet", "D-FINE-ResNet"),
         ("dab-detr", "DAB-DETR"),
         ("dac", "DAC"),
         ("data2vec-audio", "Data2VecAudio"),
@@ -489,6 +488,7 @@ MODEL_NAMES_MAPPING = OrderedDict(
         ("groupvit", "GroupViT"),
         ("helium", "Helium"),
         ("herbert", "HerBERT"),
+        ("hgnet_v2", "HGNet-V2"),
         ("hiera", "Hiera"),
         ("hubert", "Hubert"),
         ("ibert", "I-BERT"),
@@ -765,7 +765,6 @@ SPECIAL_MODEL_TYPE_TO_MODULE_NAME = OrderedDict(
         ("chinese_clip_vision_model", "chinese_clip"),
         ("rt_detr_resnet", "rt_detr"),
         ("granitevision", "llava_next"),
-        ("d_fine_resnet", "d_fine"),
     ]
 )
 
