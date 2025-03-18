@@ -332,7 +332,6 @@ _import_structure = {
     ],
     "models.cvt": ["CvtConfig"],
     "models.d_fine": ["DFineConfig"],
-    "models.hgnet_v2": ["HGNetV2Config"],
     "models.dab_detr": ["DabDetrConfig"],
     "models.dac": ["DacConfig", "DacFeatureExtractor"],
     "models.data2vec": [
@@ -513,6 +512,7 @@ _import_structure = {
     ],
     "models.helium": ["HeliumConfig"],
     "models.herbert": ["HerbertTokenizer"],
+    "models.hgnet_v2": ["HGNetV2Config"],
     "models.hiera": ["HieraConfig"],
     "models.hubert": ["HubertConfig"],
     "models.ibert": ["IBertConfig"],
@@ -1942,12 +1942,6 @@ else:
             "DFinePreTrainedModel",
         ]
     )
-    _import_structure["models.hgnet_v2"].extend(
-        [
-            "HGNetV2Backbone",
-            "HGNetV2PreTrainedModel",
-        ]
-    )
     _import_structure["models.dab_detr"].extend(
         [
             "DabDetrForObjectDetection",
@@ -2582,7 +2576,6 @@ else:
             "GraniteMoePreTrainedModel",
         ]
     )
-
     _import_structure["models.granitemoeshared"].extend(
         [
             "GraniteMoeSharedForCausalLM",
@@ -2590,6 +2583,7 @@ else:
             "GraniteMoeSharedPreTrainedModel",
         ]
     )
+
     _import_structure["models.grounding_dino"].extend(
         [
             "GroundingDinoForObjectDetection",
@@ -2612,6 +2606,12 @@ else:
             "HeliumForTokenClassification",
             "HeliumModel",
             "HeliumPreTrainedModel",
+        ]
+    )
+    _import_structure["models.hgnet_v2"].extend(
+        [
+            "HGNetV2Backbone",
+            "HGNetV2PreTrainedModel",
         ]
     )
     _import_structure["models.hiera"].extend(
