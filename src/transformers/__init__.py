@@ -2611,8 +2611,8 @@ else:
     _import_structure["models.hgnet_v2"].extend(
         [
             "HGNetV2Backbone",
-            "HGNetV2PreTrainedModel",
             "HGNetV2ForImageClassification",
+            "HGNetV2PreTrainedModel",
         ]
     )
     _import_structure["models.hiera"].extend(
