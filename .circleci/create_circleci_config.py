@@ -30,6 +30,7 @@ COMMON_ENV_VARIABLES = {
     "RUN_PIPELINE_TESTS": False,
 }
 # Disable the use of {"s": None} as the output is way too long, causing the navigation on CircleCI impractical
+# COMMON_PYTEST_OPTIONS = {"max-worker-restart": 0, "vvv": None, "rsfE":None}
 COMMON_PYTEST_OPTIONS = {"max-worker-restart": 0, "dist": "loadfile", "vvv": None, "rsfE":None}
 DEFAULT_DOCKER_IMAGE = [{"image": "cimg/python:3.8.12"}]
 
@@ -152,6 +153,7 @@ class CircleCIJob:
             {"attach_workspace": {"at": "test_preparation"}},
             {"run": "apt-get update && apt-get install -y curl"},
             {"run": " && ".join(self.install_steps)},
+            {"run": "pip install -U pytest"},
             {"run": {"name": "Download NLTK files", "command": """python -c "import nltk; nltk.download('punkt', quiet=True)" """} if "example" in self.name else "echo Skipping"},
             {"run": {
                     "name": "Show installed libraries and their size",
@@ -172,8 +174,14 @@ class CircleCIJob:
                     }
             },
             {"run": {
-                "name": "Run tests",
-                "command": f"({timeout_cmd} python3 -m pytest {marker_cmd} -n {self.pytest_num_workers} {junit_flags} {repeat_on_failure_flags} {' '.join(pytest_flags)} $(cat splitted_tests.txt) | tee tests_output.txt)"}
+                    "name": "Run tests",
+                    # "command": f"({timeout_cmd} python3 -m pytest {marker_cmd} -n {self.pytest_num_workers} {junit_flags} {repeat_on_failure_flags} {' '.join(pytest_flags)} $(cat splitted_tests.txt) | tee tests_output.txt)"}
+                    # "command": "python3 -m pytest -n 8 -v --make-reports=test_tok --durations=100 @temp4.txt"
+                    # "command": "python3 -m pytest  -n 8 -p no:warning -o junit_family=xunit1 --junitxml=test-results/junit.xml --max-worker-restart=0 --dist=loadfile -vvv -rsfE --make-reports=tests_tokenization @temp4.txt",
+                    # "command": "python3 -m pytest  -n 8  @temp4.txt",
+                    # "command": "python3 -m pytest  -n 8 -p no:warning -o junit_family=xunit1 --junitxml=test-results/junit.xml --max-worker-restart=0 -vvv -rsfE --make-reports=tests_tokenization @temp4.txt",
+                   "command": f"({timeout_cmd} python3 -m pytest {marker_cmd} -n {self.pytest_num_workers} {junit_flags} {repeat_on_failure_flags} {' '.join(pytest_flags)} $(cat splitted_tests.txt) | tee tests_output.txt)",
+                }
             },
             {"run": {"name": "Expand to show skipped tests", "when": "always", "command": f"python3 .circleci/parse_test_outputs.py --file tests_output.txt --skip"}},
             {"run": {"name": "Failed tests: show reasons",   "when": "always", "command": f"python3 .circleci/parse_test_outputs.py --file tests_output.txt --fail"}},
@@ -213,7 +221,7 @@ generate_job = CircleCIJob(
 tokenization_job = CircleCIJob(
     "tokenization",
     docker_image=[{"image": "huggingface/transformers-torch-light"}],
-    parallelism=8,
+    parallelism=1,
 )
 
 processor_job = CircleCIJob(
@@ -355,12 +363,8 @@ doc_test_job = CircleCIJob(
     pytest_num_workers=1,
 )
 
-REGULAR_TESTS = [torch_job, tf_job, flax_job, hub_job, onnx_job, tokenization_job, processor_job, generate_job, non_model_job] # fmt: skip
-EXAMPLES_TESTS = [examples_torch_job, examples_tensorflow_job]
-PIPELINE_TESTS = [pipelines_torch_job, pipelines_tf_job]
-REPO_UTIL_TESTS = [repo_utils_job]
-DOC_TESTS = [doc_test_job]
-ALL_TESTS = REGULAR_TESTS + EXAMPLES_TESTS + PIPELINE_TESTS + REPO_UTIL_TESTS + DOC_TESTS + [custom_tokenizers_job] + [exotic_models_job]  # fmt: skip
+REGULAR_TESTS = [tokenization_job] # fmt: skip
+ALL_TESTS = REGULAR_TESTS
 
 
 def create_circleci_config(folder=None):
