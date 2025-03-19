@@ -18,10 +18,9 @@ from typing import Dict, List, Optional, Union
 
 from ...image_processing_utils import BatchFeature, get_size_dict
 from ...image_processing_utils_fast import (
-    BASE_IMAGE_PROCESSOR_FAST_DOCSTRING,
-    BASE_IMAGE_PROCESSOR_FAST_DOCSTRING_PREPROCESS,
     BaseImageProcessorFast,
     DefaultFastImageProcessorKwargs,
+    customize_docstrings,
     group_images_by_shape,
     reorder_images,
 )
@@ -33,7 +32,6 @@ from ...image_utils import (
 from ...processing_utils import Unpack
 from ...utils import (
     TensorType,
-    add_start_docstrings,
     is_torch_available,
     is_torchvision_available,
     is_torchvision_v2_available,
@@ -64,9 +62,8 @@ class PixtralFastImageProcessorKwargs(DefaultFastImageProcessorKwargs):
     patch_size: Optional[Dict[str, int]]
 
 
-@add_start_docstrings(
-    r"Constructs a fast ConvNeXT image processor.",
-    BASE_IMAGE_PROCESSOR_FAST_DOCSTRING,
+@customize_docstrings(
+    "Constructs a fast ConvNeXT image processor.",
     """
         patch_size (`Dict[str, int]` *optional*, defaults to `{"height": 16, "width": 16}`):
             Size of the patches in the model, used to calculate the output image size. Can be overridden by `patch_size` in the `preprocess` method.
@@ -88,13 +85,6 @@ class PixtralImageProcessorFast(BaseImageProcessorFast):
     def __init__(self, **kwargs: Unpack[PixtralFastImageProcessorKwargs]):
         super().__init__(**kwargs)
 
-    @add_start_docstrings(
-        BASE_IMAGE_PROCESSOR_FAST_DOCSTRING_PREPROCESS,
-        """
-        patch_size (`Dict[str, int]` *optional*, defaults to `{"height": 16, "width": 16}`):
-            Size of the patches in the model, used to calculate the output image size. Can be overridden by `patch_size` in the `preprocess` method.
-        """,
-    )
     def preprocess(self, images: ImageInput, **kwargs: Unpack[PixtralFastImageProcessorKwargs]) -> BatchFeature:
         return super().preprocess(images, **kwargs)
 

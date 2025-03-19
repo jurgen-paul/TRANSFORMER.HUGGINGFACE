@@ -9,10 +9,9 @@ from typing import List, Optional, Union
 
 from ...image_processing_utils import BatchFeature, get_patch_output_size, select_best_resolution
 from ...image_processing_utils_fast import (
-    BASE_IMAGE_PROCESSOR_FAST_DOCSTRING,
-    BASE_IMAGE_PROCESSOR_FAST_DOCSTRING_PREPROCESS,
     BaseImageProcessorFast,
     DefaultFastImageProcessorKwargs,
+    customize_docstrings,
     divide_to_patches,
     group_images_by_shape,
     reorder_images,
@@ -28,7 +27,7 @@ from ...image_utils import (
     make_flat_list_of_images,
 )
 from ...processing_utils import Unpack
-from ...utils import TensorType, add_start_docstrings, is_torch_available, is_torchvision_v2_available
+from ...utils import TensorType, is_torch_available, is_torchvision_v2_available
 
 
 if is_torch_available():
@@ -44,9 +43,8 @@ class LlavaOnevisionFastImageProcessorKwargs(DefaultFastImageProcessorKwargs):
     do_pad: Optional[bool]
 
 
-@add_start_docstrings(
+@customize_docstrings(
     "Constructs a fast ConvNeXT image processor. Based on [`SiglipImageProcessor`] with incorporation of processing each video frame.",
-    BASE_IMAGE_PROCESSOR_FAST_DOCSTRING,
     """
         image_grid_pinpoints (`List[List[int]]`, *optional*):
             A list of possible resolutions to use for processing high resolution images. The best resolution is selected
@@ -77,17 +75,6 @@ class LlavaOnevisionImageProcessorFast(BaseImageProcessorFast):
     def __init__(self, **kwargs: Unpack[LlavaOnevisionFastImageProcessorKwargs]):
         super().__init__(**kwargs)
 
-    @add_start_docstrings(
-        BASE_IMAGE_PROCESSOR_FAST_DOCSTRING_PREPROCESS,
-        """
-            image_grid_pinpoints (`List`, *optional*):
-                A list of possible resolutions to use for processing high resolution images. Each item in the list should be a tuple or list
-                of the form `(height, width)`.
-            do_pad (`bool`, *optional*):
-                    Whether to pad the image. If `True`, will pad the patch dimension of the images in the batch to the largest
-                    number of patches in the batch. Padding will be applied to the bottom and right with zeros.
-        """,
-    )
     def preprocess(self, images: ImageInput, **kwargs: Unpack[LlavaOnevisionFastImageProcessorKwargs]) -> BatchFeature:
         return super().preprocess(images, **kwargs)
 
