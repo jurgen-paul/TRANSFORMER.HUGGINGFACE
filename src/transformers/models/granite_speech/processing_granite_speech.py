@@ -17,7 +17,6 @@ Processor class for Speech Granite.
 """
 from typing import List, Union
 
-import numpy as np
 import torch
 from transformers.feature_extraction_utils import BatchFeature
 from transformers.processing_utils import ProcessorMixin
@@ -47,52 +46,59 @@ class GraniteSpeechProcessor(ProcessorMixin):
 
     def __call__(
         self,
-        text: Union[TextInput, PreTokenizedInput, List[TextInput], List[PreTokenizedInput]] = None,
-        audios: Union[np.ndarray, List[np.ndarray]] = None,
+        text: Union[TextInput, PreTokenizedInput, List[TextInput], List[PreTokenizedInput]],
+        audios: Union[torch.Tensor, List[torch.Tensor]] = None,
         device: str = "cpu",
         **kwargs,
     ) -> BatchFeature:
-
-        if text is None and audios is None:
-            raise ValueError("You have to provide audio or text")
 
         speech_inputs = {}
         text_inputs = {}
 
         text = self._get_validated_text(text)
-        audios = self._get_validated_audios(audios)
-        # TODO: assert that len(audios) == count(audio_token, text)
+        expected_num_audios = sum(t.count(self.audio_token) for t in text)
         
         if audios is not None:
+            audios, audio_lengths = self._get_validated_audios(audios)
+            if len(audio_lengths) != expected_num_audios:
+                raise ValueError("Text/Audio mismatch. The number of audios and audio tokens do not match")
+            
             # Calculate Mel features & the number of placeholders we will need
             speech_inputs["input_features"] = self.feature_extractor(
                 audios,
                 device=device,
             )
             num_audio_features = self.feature_extractor._get_num_audio_features(
-                speech_inputs["input_features"],
+                audio_lengths
             )
 
             # duplicate the audio placeholders to match the feature dims
             text = self._expand_audio_placeholders(text, num_audio_features)
-
-        if text is not None:
-            text_inputs = self.tokenizer(text, **kwargs)
+        else:
+            assert expected_num_audios == 0, "no audio is provided, expecting no audio tokens."
+        
+        text_inputs = self.tokenizer(text, padding=True, **kwargs)
         return BatchFeature(data={**text_inputs, **speech_inputs})
 
-    def _expand_audio_placeholders(self, text: list[str], num_audio_features: int):
+    def _expand_audio_placeholders(self, text: list[str], num_audio_features: List[int]):
         """
         Expands audio placeholders in the formatted text to match the number of
         features of the corresponding embeddings; we can use the resulting text
         to conveniently mask the audio features into the text embeddings.
         """
         prompt_strings = []
+        num_replaced = 0
         for sample in text:
             while self.audio_token in sample:
-                # todo: (Avihu): this assumes all audios have the same length.
-                sample = sample.replace(self.audio_token, "<placeholder>" * num_audio_features, 1)
-                prompt_strings.append(sample)
-            prompt_strings = [sample.replace("<placeholder>", self.audio_token) for sample in prompt_strings]
+                sample = sample.replace(
+                    self.audio_token,
+                    "<placeholder>" * num_audio_features[num_replaced],
+                    1,
+                )
+                num_replaced += 1
+            prompt_strings.append(sample)
+        
+        prompt_strings = [sample.replace("<placeholder>", self.audio_token) for sample in prompt_strings]
         return prompt_strings
 
     ##### Validation
@@ -105,9 +111,17 @@ class GraniteSpeechProcessor(ProcessorMixin):
 
     def _get_validated_audios(self, audios):
         # todo: if this is a list, collate and keep track of audio lengths
-        if audios is not None and not isinstance(audios, torch.Tensor):
-            raise TypeError("Invalid audios provided! Audio should be a torch tensor.")
-        return audios
+        if isinstance(audios, torch.Tensor):
+            lengths = [audios.shape[-1]] * audios.shape[0]
+            return audios, lengths
+        elif isinstance(audios, list) and isinstance(audios[0], torch.Tensor):
+            lengths = [audio.shape[-1] for audio in audios]
+            padding = [max(lengths) - length for length in lengths]
+            padded = [torch.nn.functional.pad(audio, (0, pad)) for audio, pad in zip(audios, padding)]
+            audios = torch.cat(padded, dim=0)
+            return audios, lengths
+        
+        raise TypeError("Invalid audio provided. Audio should be a Tensor or a list of Tensors.")
 
 
 __all__ = ["GraniteSpeechProcessor"]
