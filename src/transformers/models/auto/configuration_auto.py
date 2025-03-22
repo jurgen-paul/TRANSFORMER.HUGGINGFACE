@@ -175,6 +175,8 @@ CONFIG_MAPPING_NAMES = OrderedDict(
         ("llava_onevision", "LlavaOnevisionConfig"),
         ("longformer", "LongformerConfig"),
         ("longt5", "LongT5Config"),
+        ("long_vita", "Long_vitaConfig"),
+        ("long_vita_vision", "Long_vitaVisionConfig"),
         ("luke", "LukeConfig"),
         ("lxmert", "LxmertConfig"),
         ("m2m_100", "M2M100Config"),
@@ -519,6 +521,8 @@ MODEL_NAMES_MAPPING = OrderedDict(
         ("llava_onevision", "LLaVA-Onevision"),
         ("longformer", "Longformer"),
         ("longt5", "LongT5"),
+        ("long_vita", "Long_vita"),
+        ("long_vita_vision", "Long_vitaVision"),
         ("luke", "LUKE"),
         ("lxmert", "LXMERT"),
         ("m2m_100", "M2M100"),
@@ -765,6 +769,7 @@ SPECIAL_MODEL_TYPE_TO_MODULE_NAME = OrderedDict(
         ("chinese_clip_vision_model", "chinese_clip"),
         ("rt_detr_resnet", "rt_detr"),
         ("granitevision", "llava_next"),
+        ("long_vita_vision", "Long_vitaVision"),
     ]
 )
 
