@@ -310,9 +310,9 @@ class TrainingArguments:
             If set to a positive number, the total number of training steps to perform. Overrides `num_train_epochs`.
             For a finite dataset, training is reiterated through the dataset (if all data is exhausted) until
             `max_steps` is reached.
-        max_eval_samples (`int`, *optional*, defaults to None)
+        max_eval_samples (`int`, *optional*, defaults to -1)
             The maximum number of evaluation samples to be used during training.  
-            If not set to any number, the whole evaluation dataset will be used during training. 
+            If not set to any number, the whole evaluation dataset will be used during training.
         lr_scheduler_type (`str` or [`SchedulerType`], *optional*, defaults to `"linear"`):
             The scheduler type to use. See the documentation of [`SchedulerType`] for all possible values.
         lr_scheduler_kwargs ('dict', *optional*, defaults to {}):
