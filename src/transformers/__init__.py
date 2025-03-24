@@ -498,13 +498,13 @@ _import_structure = {
     "models.gpt_sw3": [],
     "models.gptj": ["GPTJConfig"],
     "models.granite": ["GraniteConfig"],
-    "models.granitemoe": ["GraniteMoeConfig"],
-    "models.granitemoeshared": ["GraniteMoeSharedConfig"],
     "models.granite_speech": [
+        "GraniteSpeechConfig",
         "GraniteSpeechEncoderConfig",
         "GraniteSpeechProjectorConfig",
-        "GraniteSpeechConfig",
     ],
+    "models.granitemoe": ["GraniteMoeConfig"],
+    "models.granitemoeshared": ["GraniteMoeSharedConfig"],
     "models.grounding_dino": [
         "GroundingDinoConfig",
         "GroundingDinoProcessor",
@@ -2564,6 +2564,15 @@ else:
             "GranitePreTrainedModel",
         ]
     )
+    _import_structure["models.granite_speech"].extend(
+        [
+            "GraniteSpeechEncoderProjectorPreTrainedModel",
+            "GraniteSpeechForConditionalGeneration",
+            "GraniteSpeechPreTrainedModel",
+            "GraniteSpeechQFormerModel",
+        ]
+    )
+
     _import_structure["models.granitemoe"].extend(
         [
             "GraniteMoeForCausalLM",
@@ -2571,20 +2580,11 @@ else:
             "GraniteMoePreTrainedModel",
         ]
     )
-
     _import_structure["models.granitemoeshared"].extend(
         [
             "GraniteMoeSharedForCausalLM",
             "GraniteMoeSharedModel",
             "GraniteMoeSharedPreTrainedModel",
-        ]
-    )
-    _import_structure["models.granite_speech"].extend(
-        [
-            "GraniteSpeechForConditionalGeneration",
-            "GraniteSpeechPreTrainedModel",
-            "GraniteSpeechEncoderProjectorPreTrainedModel",
-            "GraniteSpeechQFormerModel",
         ]
     )
     _import_structure["models.grounding_dino"].extend(
@@ -4866,11 +4866,11 @@ except OptionalDependencyNotAvailable:
         name for name in dir(dummy_torchaudio_objects) if not name.startswith("_")
     ]
 else:
-    _import_structure["models.musicgen_melody"].append("MusicgenMelodyFeatureExtractor")
-    _import_structure["models.musicgen_melody"].append("MusicgenMelodyProcessor")
     _import_structure["models.granite_speech"].append("GraniteSpeechFeatureExtractor")
     _import_structure["models.granite_speech"].append("GraniteSpeechProcessor")
 
+    _import_structure["models.musicgen_melody"].append("MusicgenMelodyFeatureExtractor")
+    _import_structure["models.musicgen_melody"].append("MusicgenMelodyProcessor")
 
 # FLAX-backed objects
 try:
