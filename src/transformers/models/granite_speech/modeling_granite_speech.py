@@ -6,7 +6,6 @@ import torch
 import torch.utils.checkpoint
 from torch import nn, einsum
 import torch.nn.functional as F
-GraniteSpeechQFormerConfig = int
 from transformers.activations import ACT2FN
 from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable_heads_and_indices, prune_linear_layer
 from transformers.generation import GenerationMixin
@@ -552,7 +551,7 @@ class GraniteSpeechQFormerModel(GraniteSpeechEncoderProjectorPreTrainedModel):
     Querying Transformer (Q-Former), used in GraniteSpeech.
     """
 
-    def __init__(self, config: GraniteSpeechQFormerConfig):
+    def __init__(self, config: GraniteSpeechProjectorConfig):
         super().__init__(config)
         self.config = config
 
@@ -905,12 +904,11 @@ class Attention(nn.Module):
         bs, n, d = x.shape
         assert(context_size > 0 and context_size <= max_pos_emb)
 
-        nb = n // context_size
+        nb = math.ceil(n / context_size)
         nr = n % context_size
         if nr > 0:
-            y = torch.zeros(x.shape[0], context_size-nr, x.shape[2], device=device)
-            x = torch.cat((x,y), dim=1)
-            nb += 1
+            # right padding to reach block size
+            x = torch.nn.functional.pad(x, (0, 0, 0, context_size - nr))
 
         q, k, v = (self.to_q(x), *self.to_kv(x).chunk(2, dim = -1))
         q, k, v = map(
@@ -928,10 +926,11 @@ class Attention(nn.Module):
         dots = dots + pos_attn
 
         if nr > 0:
-            mask = torch.ones(context_size, context_size, device=device)
+            # masked attention in the extended block
+            mask = torch.ones(context_size, context_size, dtype=bool, device=device)
             mask[:nr,:nr] = 0
             mask_value = -torch.finfo(dots.dtype).max
-            dots[:,-1,:].masked_fill_(mask.bool(), mask_value)
+            dots[:,-1,:].masked_fill_(mask, mask_value)
 
         attn = dots.softmax(dim = -1)
 
@@ -1183,6 +1182,7 @@ class GraniteSpeechForConditionalGeneration(GraniteSpeechPretrainedModel, Genera
         self,
         input_ids: torch.LongTensor = None,
         input_features: torch.FloatTensor = None,
+        input_features_mask: Optional[torch.Tensor] = None,
         attention_mask: Optional[torch.Tensor] = None,
         position_ids: Optional[torch.LongTensor] = None,
         past_key_values: Optional[List[torch.FloatTensor]] = None,
@@ -1239,6 +1239,9 @@ class GraniteSpeechForConditionalGeneration(GraniteSpeechPretrainedModel, Genera
             inputs_embeds = self.get_input_embeddings()(llm_input_ids)
 
         if input_features is not None:
+            if input_features.dtype != self.dtype:
+                logger.warning(f"input features are casted to {self.dtype}")
+                input_features = input_features.to(self.dtype)
             # Get the audio features from the encoder / projector 
             audio_features = self.get_audio_features(input_features)
 
@@ -1246,6 +1249,7 @@ class GraniteSpeechForConditionalGeneration(GraniteSpeechPretrainedModel, Genera
             inputs_embeds = self.get_merged_audio_embeddings(
                 input_ids=input_ids,
                 audio_features=audio_features,
+                input_features_mask=input_features_mask
             )
 
         outputs = self.language_model(
@@ -1325,7 +1329,7 @@ class GraniteSpeechForConditionalGeneration(GraniteSpeechPretrainedModel, Genera
             model_inputs["input_features"] = input_features
         return model_inputs
 
-    def get_merged_audio_embeddings(self, input_ids, audio_features):
+    def get_merged_audio_embeddings(self, input_ids, audio_features, input_features_mask):
         """
         Adds the audio token to the model's LLM vocabulary so that we can pass it
         through the tokenizer; it's assumed that the embeddings corresponding to the
@@ -1342,7 +1346,7 @@ class GraniteSpeechForConditionalGeneration(GraniteSpeechPretrainedModel, Genera
 
         # Mask the audio features into the text embeddings
         special_audio_mask = is_audio_index.unsqueeze(-1)
-        audio_features = audio_features.to(inputs_embeds.device, inputs_embeds.dtype)
+        audio_features = audio_features.to(inputs_embeds.device, inputs_embeds.dtype)[input_features_mask]
         inputs_embeds = inputs_embeds.masked_scatter(
             special_audio_mask,
             audio_features,
