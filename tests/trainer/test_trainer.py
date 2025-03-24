@@ -1322,8 +1322,21 @@ class TrainerIntegrationTest(TestCasePlus, TrainerIntegrationCommon):
         self.assertEqual(train_output.global_step, 10)
 
     def test_number_of_eval_samples(self):
-        tmp_dir = self.get_auto_remove_tmp_dir()
-        trainer = get_regression_trainer(learning_rate=0.1, num_train_epochs=1, output_dir=tmp_dir)
+        config = LlamaConfig(vocab_size=100, hidden_size=32, num_hidden_layers=3, num_attention_heads=4)
+        tiny_llama = LlamaForCausalLM(config)
+
+        x = torch.randint(0, 100, (128,))
+        train_dataset = RepeatDataset(x)
+
+        args = TrainingArguments(
+            self.get_auto_remove_tmp_dir(),
+            per_device_train_batch_size=2,
+            torch_compile=True,
+            max_steps=1,
+            max_eval_samples=1
+        )
+        
+        trainer = Trainer(model=tiny_llama, args=args, train_dataset=train_dataset)  # noqa
         trainer.train()
         self.assertEqual(trainer.max_eval_samples, trainer.observed_num_examples)
 
