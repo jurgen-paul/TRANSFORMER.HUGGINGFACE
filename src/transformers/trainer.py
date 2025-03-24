@@ -4317,17 +4317,18 @@ class Trainer:
         eval_set_kwargs = {}
 
         # Will be useful when we have an iterable dataset so don't know its length.
-        observed_num_examples = 0
+        observed_num_examples = 0 
+        #setting the maximum number of samples the evaluation loop processes.
+        max_eval_samples = self.args.max_eval_samples if limit_eval_sample_size else -1 
 
-        #setting the maximum number of samples the evaluation loop processes 
-        max_eval_samples = self.args.max_eval_samples if limit_eval_sample_size else -1
+
 
         # Main evaluation loop
         for step, inputs in enumerate(dataloader):
-            # check to see if maximum amount of eval samples reached 
+            # check to see if maximum amount of eval samples reached.
             if max_eval_samples != -1 and observed_num_examples >= max_eval_samples:
                 break
-            # Update the observed num examples
+            # Update the observed num examples.
             observed_batch_size = find_batch_size(inputs)
             if observed_batch_size is not None:
                 observed_num_examples += observed_batch_size
@@ -4394,6 +4395,10 @@ class Trainer:
 
                 del losses, logits, labels, inputs
                 torch.cuda.empty_cache()
+        
+        #adding them as a field for testing purposes.
+        self.max_eval_samples = max_eval_samples
+        self.observed_num_examples = observed_num_examples
 
         # After all calls to `.gather_function`, reset to `gather_for_metrics`:
         self.gather_function = self.accelerator.gather_for_metrics

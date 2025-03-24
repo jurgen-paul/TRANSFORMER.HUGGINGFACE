@@ -311,7 +311,7 @@ class TrainingArguments:
             For a finite dataset, training is reiterated through the dataset (if all data is exhausted) until
             `max_steps` is reached.
         max_eval_samples (`int`, *optional*, defaults to -1)
-            The maximum number of evaluation samples to be used during training.  
+            The maximum number of evaluation samples to be used during training.
             If not set to any number, the whole evaluation dataset will be used during training.
         lr_scheduler_type (`str` or [`SchedulerType`], *optional*, defaults to `"linear"`):
             The scheduler type to use. See the documentation of [`SchedulerType`] for all possible values.
