@@ -4317,9 +4317,9 @@ class Trainer:
         eval_set_kwargs = {}
 
         # Will be useful when we have an iterable dataset so don't know its length.
-        observed_num_examples = 0 
+        observed_num_examples = 0
         #setting the maximum number of samples the evaluation loop processes.
-        max_eval_samples = self.args.max_eval_samples if limit_eval_sample_size else -1 
+        max_eval_samples = self.args.max_eval_samples if limit_eval_sample_size else -1
 
 
 
@@ -4395,7 +4395,7 @@ class Trainer:
 
                 del losses, logits, labels, inputs
                 torch.cuda.empty_cache()
-        
+
         #adding them as a field for testing purposes.
         self.max_eval_samples = max_eval_samples
         self.observed_num_examples = observed_num_examples

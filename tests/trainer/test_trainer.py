@@ -1320,12 +1320,16 @@ class TrainerIntegrationTest(TestCasePlus, TrainerIntegrationCommon):
         trainer = get_regression_trainer(learning_rate=0.1, max_steps=10, output_dir=tmp_dir)
         train_output = trainer.train()
         self.assertEqual(train_output.global_step, 10)
-    
+
     def test_number_of_eval_samples(self):
         tmp_dir = self.get_auto_remove_tmp_dir()
         trainer = get_regression_trainer(learning_rate=0.1, num_train_epochs=1, output_dir=tmp_dir)
         trainer.train()
         self.assertEqual(trainer.max_eval_samples, trainer.observed_num_examples)
+
+        trainer.evaluate()
+        self.assertNotEqual(trainer.max_eval_samples, trainer.observed_num_examples)
+        self.asertEqual(trainer.max_eval_samples, -1)
 
     @require_torch_bf16
     @require_intel_extension_for_pytorch
