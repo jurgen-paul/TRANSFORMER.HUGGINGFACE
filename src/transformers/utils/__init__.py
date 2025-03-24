@@ -95,6 +95,7 @@ from .hub import (
     http_user_agent,
     is_offline_mode,
     is_remote_url,
+    list_repo_templates,
     send_example_telemetry,
     try_to_load_from_cache,
 )
@@ -268,9 +269,11 @@ CONFIG_NAME = "config.json"
 FEATURE_EXTRACTOR_NAME = "preprocessor_config.json"
 IMAGE_PROCESSOR_NAME = FEATURE_EXTRACTOR_NAME
 PROCESSOR_NAME = "processor_config.json"
-CHAT_TEMPLATE_NAME = "chat_template.json"
 GENERATION_CONFIG_NAME = "generation_config.json"
 MODEL_CARD_NAME = "modelcard.json"
+LEGACY_PROCESSOR_CHAT_TEMPLATE_FILE = "chat_template.json"
+CHAT_TEMPLATE_FILE = "chat_template.jinja"
+CHAT_TEMPLATE_DIR = "additional_chat_templates"
 
 SENTENCEPIECE_UNDERLINE = "▁"
 SPIECE_UNDERLINE = SENTENCEPIECE_UNDERLINE  # Kept for backward compatibility
