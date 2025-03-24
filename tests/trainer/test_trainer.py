@@ -1335,7 +1335,7 @@ class TrainerIntegrationTest(TestCasePlus, TrainerIntegrationCommon):
             max_steps=1,
             max_eval_samples=1
         )
-        
+
         trainer = Trainer(model=tiny_llama, args=args, train_dataset=train_dataset)  # noqa
         trainer.train()
         self.assertEqual(trainer.max_eval_samples, trainer.observed_num_examples)
