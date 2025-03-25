@@ -119,6 +119,7 @@ from . import (
     gpt_sw3,
     gptj,
     granite,
+    granite_speech,
     granitemoe,
     granitemoeshared,
     grounding_dino,
