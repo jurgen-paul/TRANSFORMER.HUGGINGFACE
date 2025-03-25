@@ -3,7 +3,7 @@ name: Build pr ci-docker
 on:
   push:
     branches:
-      - update_ruff
+      - update_ruff_2
   repository_dispatch:
   workflow_call:
     inputs:
