@@ -116,9 +116,7 @@ class CompressedTensorsHfQuantizer(HfQuantizer):
 
         ct_quantization_config = self.compressor.quantization_config
 
-        if self.run_compressed:
-            if not self.is_quantization_compressed:
-                raise ValueError("`run_compressed` is only supported for quantized_compressed models")
+        if self.run_compressed and self.is_quantization_compressed:
             apply_quantization_config(model, ct_quantization_config, run_compressed=True)
         elif self.is_quantized and not self.is_quantization_compressed:
             apply_quantization_config(model, ct_quantization_config)
@@ -154,7 +152,8 @@ class CompressedTensorsHfQuantizer(HfQuantizer):
 
         return (
             self.quantization_config.quantization_config is not None
-            and self.quantization_config.quantization_config.quantization_status == QuantizationStatus.COMPRESSED
+            and self.quantization_config.quantization_config.quantization_status
+            in [QuantizationStatus.COMPRESSED, QuantizationStatus.FROZEN]
         )
 
     @property
