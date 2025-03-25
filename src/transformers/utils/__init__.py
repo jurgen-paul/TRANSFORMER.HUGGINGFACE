@@ -15,7 +15,6 @@
 # limitations under the License.
 
 from functools import lru_cache
-from typing import FrozenSet
 
 from huggingface_hub import get_full_repo_name  # for backward compatibility
 from huggingface_hub.constants import HF_HUB_DISABLE_TELEMETRY as DISABLE_TELEMETRY  # for backward compatibility
