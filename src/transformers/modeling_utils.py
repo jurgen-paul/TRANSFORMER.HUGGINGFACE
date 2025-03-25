@@ -773,7 +773,7 @@ def _load_state_dict_into_meta_model(
         device_map_regex = "|".join([re.escape(k) for k in sorted(device_map.keys(), reverse=True)])
 
     is_quantized = hf_quantizer is not None
-    is_meta_state_dict = shard_file.endswith(".safetensors") and not is_quantized
+    is_meta_state_dict = shard_file.endswith(".safetensors")# and not is_quantized
 
     file_pointer = None
     if is_meta_state_dict:
@@ -789,7 +789,7 @@ def _load_state_dict_into_meta_model(
             serialized_param_name = reverse_renaming_mapping[param_name]
             param = file_pointer.get_slice(serialized_param_name)
         else:
-            param = empty_param  # It is actually not empty!
+            param = empty_param.to(tensor_device)  # It is actually not empty!
 
         to_contiguous, casting_dtype = _infer_parameter_dtype(
             model,
@@ -807,7 +807,7 @@ def _load_state_dict_into_meta_model(
                 param_name,
                 casting_dtype,
                 to_contiguous,
-                tensor_device,  # the rank
+                int(os.environ["RANK"]),  # the rank
                 device_mesh,
             )
         else:
@@ -883,6 +883,40 @@ def _add_variant(weights_name: str, variant: Optional[str] = None) -> str:
         path, name = weights_name.rsplit(".", 1)
         weights_name = f"{path}.{variant}.{name}"
     return weights_name
+
+
+def update_key_name(keys):
+    """
+    Updates a dictionary of keys to pack layers together as layer.{0, 1, 4} instead of layers.0, layers.1, layers.4.
+    """
+    key_dict = defaultdict(list)
+    for key in keys:
+        all_digits = re.findall(r".(\d+).", key)
+        for i, k in enumerate(all_digits):
+            if len(key_dict[re.sub(r".(\d+).", ".*.", key)]) <= i:
+                key_dict[re.sub(r".(\d+).", ".*.", key)].append(set())
+            key_dict[re.sub(r".(\d+).", ".*.", key)][i].add(int(k))
+
+    final_keys = set()
+    for key in keys:
+        text = re.sub(r".(\d+).", ".*.", key)
+        pattern = key_dict[text]
+        final_text = ""
+        for i, part in enumerate(text.split("*")):
+            if len(pattern) <= i:
+                final_text += part
+            else:
+                data = [str(i) for i in sorted(pattern[i])]
+                if len(data) > 10:
+                    result = f"{data[0]}...{data[-1]}"
+                else:
+                    result = ", ".join(data)  # If there are only 1 or 2 elements, show them all
+                if len(data) > 1:
+                    final_text += part + "{" + result + "}"
+                else:
+                    final_text += part + data[0]
+        final_keys.add(final_text)
+    return list(final_keys)
 
 
 def _get_resolved_checkpoint_files(
@@ -1328,8 +1362,10 @@ def _get_device_map(
             max_memory = hf_quantizer.adjust_max_memory(max_memory)
         device_map_kwargs["max_memory"] = max_memory
 
+        print(device_map)
         device_map = infer_auto_device_map(model, dtype=target_dtype, **device_map_kwargs)
-
+        print(device_map)
+        exit(0)
         if hf_quantizer is not None:
             hf_quantizer.validate_environment(device_map=device_map)
 
@@ -4096,7 +4132,7 @@ class PreTrainedModel(nn.Module, ModuleUtilsMixin, GenerationMixin, PushToHubMix
             if not torch.distributed.is_initialized():
                 try:
                     logger.warning("Tensor Parallel requires torch.distributed to be initialized first.")
-                    rank = int(os.environ["RANK"])
+                    rank = int(os.environ["LOCAL_RANK"])
                     world_size = int(os.environ["WORLD_SIZE"])
                     torch.distributed.init_process_group("nccl", rank=rank, world_size=world_size)
                     torch.cuda.set_device(rank)
@@ -4110,10 +4146,13 @@ class PreTrainedModel(nn.Module, ModuleUtilsMixin, GenerationMixin, PushToHubMix
             device_type = torch._C._get_accelerator().type
             device_module = torch.get_device_module(device_type)
             # Get device with index assuming equal number of devices per host
-            tp_device = torch.device(device_type, torch.distributed.get_rank() % device_module.device_count())
+            tp_device = torch.device(device_type, torch.cuda.current_device())
+            # if tp_device.index > 0:
+            #     import sys
+            #     sys.stdout = open(os.devnull, "w")
             # This is the easiest way to dispatch to the current process device
             device_map = tp_device
-
+            print("DEVICE MAP:", device_map)
             # Assuming sharding the model onto the world
             world_size = torch.distributed.get_world_size()
             device_mesh = torch.distributed.init_device_mesh(tp_device.type, (world_size,))
@@ -5000,7 +5039,7 @@ class PreTrainedModel(nn.Module, ModuleUtilsMixin, GenerationMixin, PushToHubMix
             warner = logger.warning if model.__class__.__name__ in archs else logger.info
             warner(
                 f"Some weights of the model checkpoint at {pretrained_model_name_or_path} were not used when"
-                f" initializing {model.__class__.__name__}: {unexpected_keys}\n- This IS expected if you are"
+                f" initializing {model.__class__.__name__}: {"\n\t".join(update_key_name(unexpected_keys))}\n- This IS expected if you are"
                 f" initializing {model.__class__.__name__} from the checkpoint of a model trained on another task or"
                 " with another architecture (e.g. initializing a BertForSequenceClassification model from a"
                 " BertForPreTraining model).\n- This IS NOT expected if you are initializing"
@@ -5011,8 +5050,8 @@ class PreTrainedModel(nn.Module, ModuleUtilsMixin, GenerationMixin, PushToHubMix
             logger.info(f"All model checkpoint weights were used when initializing {model.__class__.__name__}.\n")
         if len(missing_keys) > 0:
             logger.warning(
-                f"Some weights of {model.__class__.__name__} were not initialized from the model checkpoint at"
-                f" {pretrained_model_name_or_path} and are newly initialized: {missing_keys}\nYou should probably"
+                f"\nSome weights of {model.__class__.__name__} were not initialized from the model checkpoint at"
+                f" {pretrained_model_name_or_path} and are newly initialized: {"\n\t".join(update_key_name(missing_keys))}\nYou should probably"
                 " TRAIN this model on a down-stream task to be able to use it for predictions and inference."
             )
         elif len(mismatched_keys) == 0:
@@ -5030,7 +5069,7 @@ class PreTrainedModel(nn.Module, ModuleUtilsMixin, GenerationMixin, PushToHubMix
                 ]
             )
             logger.warning(
-                f"Some weights of {model.__class__.__name__} were not initialized from the model checkpoint at"
+                f"\nSome weights of {model.__class__.__name__} were not initialized from the model checkpoint at"
                 f" {pretrained_model_name_or_path} and are newly initialized because the shapes did not"
                 f" match:\n{mismatched_warning}\nYou should probably TRAIN this model on a down-stream task to be able"
                 " to use it for predictions and inference."
@@ -5854,7 +5893,8 @@ def caching_allocator_warmup(model: PreTrainedModel, expanded_device_map: Dict):
         if _torch_distributed_available and torch.distributed.is_initialized()
         else None
     )
-
+    print("Preallocating memory with cache allocator to improve loading perfs")
+    print(accelerator_device_map)
     total_byte_count = defaultdict(lambda: 0)
     for param_name, device in accelerator_device_map.items():
         param = model.get_parameter_or_buffer(param_name)
