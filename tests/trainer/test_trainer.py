@@ -1327,22 +1327,24 @@ class TrainerIntegrationTest(TestCasePlus, TrainerIntegrationCommon):
 
         x = torch.randint(0, 100, (128,))
         train_dataset = RepeatDataset(x)
+        eval_dataset = RepeatDataset(x)
 
         args = TrainingArguments(
             self.get_auto_remove_tmp_dir(),
-            per_device_train_batch_size=2,
-            torch_compile=True,
-            max_steps=1,
-            max_eval_samples=1
+            max_eval_samples=1,
+            evaluation_strategy="epoch",  # Enable evaluation at the end of each epoch
+            num_train_epochs=2,           # Train for at least one epoch to trigger evaluation
+            per_device_train_batch_size=4, # You'll likely want to set your batch size
+            per_device_eval_batch_size=4,  # You'll likely want to set your evaluation batch size
         )
 
-        trainer = Trainer(model=tiny_llama, args=args, train_dataset=train_dataset)  # noqa
+        trainer = Trainer(model=tiny_llama, args=args, train_dataset=train_dataset, eval_dataset=eval_dataset)  # noqa
         trainer.train()
         self.assertEqual(trainer.max_eval_samples, trainer.observed_num_examples)
 
         trainer.evaluate()
         self.assertNotEqual(trainer.max_eval_samples, trainer.observed_num_examples)
-        self.asertEqual(trainer.max_eval_samples, -1)
+        self.assertEqual(trainer.max_eval_samples, -1)
 
     @require_torch_bf16
     @require_intel_extension_for_pytorch

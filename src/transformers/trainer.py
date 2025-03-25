@@ -5109,7 +5109,7 @@ class Trainer:
         # Will be useful when we have an iterable dataset so don't know its length.
         observed_num_examples = 0
         # setting the maximum number of samples the evaluation loop processes.
-        max_eval_samples = self.args.max_eval_samples if limit_eval_sample_size else -1
+        max_eval_samples = self.args.max_eval_samples * self.args.eval_batch_size if limit_eval_sample_size else -1
 
         # Main evaluation loop
         for step, inputs in enumerate(dataloader):
