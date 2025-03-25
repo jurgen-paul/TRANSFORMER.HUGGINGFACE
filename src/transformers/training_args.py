@@ -822,7 +822,7 @@ class TrainingArguments:
             https://github.com/huggingface/transformers/issues/34242
     """
 
-    framework = "pt"
+    framework: str = "pt"
     output_dir: Optional[str] = field(
         default=None,
         metadata={
@@ -921,7 +921,7 @@ class TrainingArguments:
         default="linear",
         metadata={"help": "The scheduler type to use."},
     )
-    lr_scheduler_kwargs: Optional[Union[dict, str]] = field(
+    lr_scheduler_kwargs: Optional[Union[dict[str, Any], str]] = field(
         default_factory=dict,
         metadata={
             "help": (
@@ -1245,11 +1245,11 @@ class TrainingArguments:
             )
         },
     )
-    fsdp_config: Optional[Union[dict, str]] = field(
+    fsdp_config: Optional[Union[dict[str, Any], str]] = field(
         default=None,
         metadata={
             "help": (
-                "Config to be used with FSDP (Pytorch Fully Sharded  Data Parallel). The value is either a "
+                "Config to be used with FSDP (Pytorch Fully Sharded Data Parallel). The value is either a "
                 "fsdp json config file (e.g., `fsdp_config.json`) or an already loaded json file as `dict`."
             )
         },
@@ -1275,7 +1275,7 @@ class TrainingArguments:
             )
         },
     )
-    accelerator_config: Optional[Union[dict, str]] = field(
+    accelerator_config: Optional[Union[dict[str, Any], str]] = field(
         default=None,
         metadata={
             "help": (
@@ -1393,7 +1393,7 @@ class TrainingArguments:
             "help": "If True, use gradient checkpointing to save memory at the expense of slower backward pass."
         },
     )
-    gradient_checkpointing_kwargs: Optional[Union[dict, str]] = field(
+    gradient_checkpointing_kwargs: Optional[Union[dict[str, Any], str]] = field(
         default=None,
         metadata={
             "help": "Gradient checkpointing key word arguments such as `use_reentrant`. Will be passed to `torch.utils.checkpoint.checkpoint` through `model.gradient_checkpointing_enable`."
@@ -1482,7 +1482,7 @@ class TrainingArguments:
             )
         },
     )
-    ddp_timeout: Optional[int] = field(
+    ddp_timeout: int = field(
         default=1800,
         metadata={
             "help": "Overrides the default timeout for distributed training (value should be given in seconds)."
@@ -2215,7 +2215,7 @@ class TrainingArguments:
                     f"Please run `pip install transformers[torch]` or `pip install 'accelerate>={ACCELERATE_MIN_VERSION}'`"
                 )
         # We delay the init of `PartialState` to the end for clarity
-        accelerator_state_kwargs = {"enabled": True, "use_configured_state": False}
+        accelerator_state_kwargs: dict[str, Any] = {"enabled": True, "use_configured_state": False}
         if isinstance(self.accelerator_config, AcceleratorConfig):
             accelerator_state_kwargs["use_configured_state"] = self.accelerator_config.pop(
                 "use_configured_state", False
