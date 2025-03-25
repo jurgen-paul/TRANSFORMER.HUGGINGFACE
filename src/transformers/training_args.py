@@ -101,9 +101,7 @@ if is_torch_neuroncore_available(check_device=False):
             if not isinstance(dist.group.WORLD, xbn.ProcessGroupXla):
                 dist.init_process_group(backend="xla")
                 if not isinstance(dist.group.WORLD, xbn.ProcessGroupXla):
-                    raise AssertionError(
-                        "Failed to initialize torch.distributed process group using XLA backend."
-                    )
+                    raise AssertionError("Failed to initialize torch.distributed process group using XLA backend.")
 
 
 if is_sagemaker_mp_enabled():
@@ -847,21 +845,15 @@ class TrainingArguments:
     )
 
     do_train: bool = field(default=False, metadata={"help": "Whether to run training."})
-    do_eval: bool = field(
-        default=False, metadata={"help": "Whether to run eval on the dev set."}
-    )
-    do_predict: bool = field(
-        default=False, metadata={"help": "Whether to run predictions on the test set."}
-    )
+    do_eval: bool = field(default=False, metadata={"help": "Whether to run eval on the dev set."})
+    do_predict: bool = field(default=False, metadata={"help": "Whether to run predictions on the test set."})
     eval_strategy: Union[IntervalStrategy, str] = field(
         default="no",
         metadata={"help": "The evaluation strategy to use."},
     )
     prediction_loss_only: bool = field(
         default=False,
-        metadata={
-            "help": "When performing evaluation and predictions, only returns the loss."
-        },
+        metadata={"help": "When performing evaluation and predictions, only returns the loss."},
     )
 
     per_device_train_batch_size: int = field(
@@ -894,15 +886,11 @@ class TrainingArguments:
 
     gradient_accumulation_steps: int = field(
         default=1,
-        metadata={
-            "help": "Number of updates steps to accumulate before performing a backward/update pass."
-        },
+        metadata={"help": "Number of updates steps to accumulate before performing a backward/update pass."},
     )
     eval_accumulation_steps: Optional[int] = field(
         default=None,
-        metadata={
-            "help": "Number of predictions steps to accumulate before moving the tensors to the CPU."
-        },
+        metadata={"help": "Number of predictions steps to accumulate before moving the tensors to the CPU."},
     )
 
     eval_delay: Optional[float] = field(
@@ -924,31 +912,17 @@ class TrainingArguments:
         },
     )
 
-    learning_rate: float = field(
-        default=5e-5, metadata={"help": "The initial learning rate for AdamW."}
-    )
-    weight_decay: float = field(
-        default=0.0, metadata={"help": "Weight decay for AdamW if we apply some."}
-    )
-    adam_beta1: float = field(
-        default=0.9, metadata={"help": "Beta1 for AdamW optimizer"}
-    )
-    adam_beta2: float = field(
-        default=0.999, metadata={"help": "Beta2 for AdamW optimizer"}
-    )
-    adam_epsilon: float = field(
-        default=1e-8, metadata={"help": "Epsilon for AdamW optimizer."}
-    )
+    learning_rate: float = field(default=5e-5, metadata={"help": "The initial learning rate for AdamW."})
+    weight_decay: float = field(default=0.0, metadata={"help": "Weight decay for AdamW if we apply some."})
+    adam_beta1: float = field(default=0.9, metadata={"help": "Beta1 for AdamW optimizer"})
+    adam_beta2: float = field(default=0.999, metadata={"help": "Beta2 for AdamW optimizer"})
+    adam_epsilon: float = field(default=1e-8, metadata={"help": "Epsilon for AdamW optimizer."})
     max_grad_norm: float = field(default=1.0, metadata={"help": "Max gradient norm."})
 
-    num_train_epochs: float = field(
-        default=3.0, metadata={"help": "Total number of training epochs to perform."}
-    )
+    num_train_epochs: float = field(default=3.0, metadata={"help": "Total number of training epochs to perform."})
     max_steps: int = field(
         default=-1,
-        metadata={
-            "help": "If > 0: set total number of training steps to perform. Override num_train_epochs."
-        },
+        metadata={"help": "If > 0: set total number of training steps to perform. Override num_train_epochs."},
     )
     max_eval_samples: int = field(
         default=-1,
@@ -972,9 +946,7 @@ class TrainingArguments:
         default=0.0,
         metadata={"help": "Linear warmup over warmup_ratio fraction of total steps."},
     )
-    warmup_steps: int = field(
-        default=0, metadata={"help": "Linear warmup over warmup_steps."}
-    )
+    warmup_steps: int = field(default=0, metadata={"help": "Linear warmup over warmup_steps."})
 
     log_level: Optional[str] = field(
         default="passive",
@@ -1003,16 +975,12 @@ class TrainingArguments:
             )
         },
     )
-    logging_dir: Optional[str] = field(
-        default=None, metadata={"help": "Tensorboard log dir."}
-    )
+    logging_dir: Optional[str] = field(default=None, metadata={"help": "Tensorboard log dir."})
     logging_strategy: Union[IntervalStrategy, str] = field(
         default="steps",
         metadata={"help": "The logging strategy to use."},
     )
-    logging_first_step: bool = field(
-        default=False, metadata={"help": "Log the first global_step"}
-    )
+    logging_first_step: bool = field(default=False, metadata={"help": "Log the first global_step"})
     logging_steps: float = field(
         default=500,
         metadata={
@@ -1022,9 +990,7 @@ class TrainingArguments:
             )
         },
     )
-    logging_nan_inf_filter: bool = field(
-        default=True, metadata={"help": "Filter nan and inf losses for logging."}
-    )
+    logging_nan_inf_filter: bool = field(default=True, metadata={"help": "Filter nan and inf losses for logging."})
     save_strategy: Union[SaveStrategy, str] = field(
         default="steps",
         metadata={"help": "The checkpoint save strategy to use."},
@@ -1086,9 +1052,7 @@ class TrainingArguments:
     )
     no_cuda: bool = field(
         default=False,
-        metadata={
-            "help": "This argument is deprecated. It will be removed in version 5.0 of 🤗 Transformers."
-        },
+        metadata={"help": "This argument is deprecated. It will be removed in version 5.0 of 🤗 Transformers."},
     )
     use_cpu: bool = field(
         default=False,
@@ -1107,9 +1071,7 @@ class TrainingArguments:
         default=42,
         metadata={"help": "Random seed that will be set at the beginning of training."},
     )
-    data_seed: Optional[int] = field(
-        default=None, metadata={"help": "Random seed to be used with data samplers."}
-    )
+    data_seed: Optional[int] = field(default=None, metadata={"help": "Random seed to be used with data samplers."})
     jit_mode_eval: bool = field(
         default=False,
         metadata={"help": "Whether or not to use PyTorch jit trace for inference"},
@@ -1174,9 +1136,7 @@ class TrainingArguments:
             )
         },
     )
-    local_rank: int = field(
-        default=-1, metadata={"help": "For distributed training: local_rank"}
-    )
+    local_rank: int = field(default=-1, metadata={"help": "For distributed training: local_rank"})
     ddp_backend: Optional[str] = field(
         default=None,
         metadata={
@@ -1186,9 +1146,7 @@ class TrainingArguments:
     )
     tpu_num_cores: Optional[int] = field(
         default=None,
-        metadata={
-            "help": "TPU: Number of TPU cores (automatically passed by launcher script)"
-        },
+        metadata={"help": "TPU: Number of TPU cores (automatically passed by launcher script)"},
     )
     tpu_metrics_debug: bool = field(
         default=False,
@@ -1211,9 +1169,7 @@ class TrainingArguments:
 
     dataloader_drop_last: bool = field(
         default=False,
-        metadata={
-            "help": "Drop the last incomplete batch if it is not divisible by the batch size."
-        },
+        metadata={"help": "Drop the last incomplete batch if it is not divisible by the batch size."},
     )
     eval_steps: Optional[float] = field(
         default=None,
@@ -1245,9 +1201,7 @@ class TrainingArguments:
     )
     past_index: int = field(
         default=-1,
-        metadata={
-            "help": "If >=0, uses the corresponding part of the output as the past state for next step."
-        },
+        metadata={"help": "If >=0, uses the corresponding part of the output as the past state for next step."},
     )
 
     run_name: Optional[str] = field(
@@ -1263,15 +1217,11 @@ class TrainingArguments:
 
     remove_unused_columns: Optional[bool] = field(
         default=True,
-        metadata={
-            "help": "Remove columns not required by the model when using an nlp.Dataset."
-        },
+        metadata={"help": "Remove columns not required by the model when using an nlp.Dataset."},
     )
     label_names: Optional[List[str]] = field(
         default=None,
-        metadata={
-            "help": "The list of keys in your dictionary of inputs that correspond to the labels."
-        },
+        metadata={"help": "The list of keys in your dictionary of inputs that correspond to the labels."},
     )
     load_best_model_at_end: Optional[bool] = field(
         default=False,
@@ -1288,9 +1238,7 @@ class TrainingArguments:
     )
     greater_is_better: Optional[bool] = field(
         default=None,
-        metadata={
-            "help": "Whether the `metric_for_best_model` should be maximized or not."
-        },
+        metadata={"help": "Whether the `metric_for_best_model` should be maximized or not."},
     )
     ignore_data_skip: bool = field(
         default=False,
@@ -1372,9 +1320,7 @@ class TrainingArguments:
     )
     label_smoothing_factor: float = field(
         default=0.0,
-        metadata={
-            "help": "The label smoothing epsilon to apply (zero means no label smoothing)."
-        },
+        metadata={"help": "The label smoothing epsilon to apply (zero means no label smoothing)."},
     )
 
     default_optim = "adamw_torch"
@@ -1387,30 +1333,22 @@ class TrainingArguments:
         default=default_optim,
         metadata={"help": "The optimizer to use."},
     )
-    optim_args: Optional[str] = field(
-        default=None, metadata={"help": "Optional arguments to supply to optimizer."}
-    )
+    optim_args: Optional[str] = field(default=None, metadata={"help": "Optional arguments to supply to optimizer."})
     adafactor: bool = field(
         default=False,
         metadata={"help": "Whether or not to replace AdamW by Adafactor."},
     )
     group_by_length: bool = field(
         default=False,
-        metadata={
-            "help": "Whether or not to group samples of roughly the same length together when batching."
-        },
+        metadata={"help": "Whether or not to group samples of roughly the same length together when batching."},
     )
     length_column_name: Optional[str] = field(
         default="length",
-        metadata={
-            "help": "Column name with precomputed lengths to use when grouping by length."
-        },
+        metadata={"help": "Column name with precomputed lengths to use when grouping by length."},
     )
     report_to: Union[None, str, List[str]] = field(
         default=None,
-        metadata={
-            "help": "The list of integrations to report the results and logs to."
-        },
+        metadata={"help": "The list of integrations to report the results and logs to."},
     )
     ddp_find_unused_parameters: Optional[bool] = field(
         default=None,
@@ -1450,41 +1388,29 @@ class TrainingArguments:
     )
     skip_memory_metrics: bool = field(
         default=True,
-        metadata={
-            "help": "Whether or not to skip adding of memory profiler reports to metrics."
-        },
+        metadata={"help": "Whether or not to skip adding of memory profiler reports to metrics."},
     )
     use_legacy_prediction_loop: bool = field(
         default=False,
-        metadata={
-            "help": "Whether or not to use the legacy prediction_loop in the Trainer."
-        },
+        metadata={"help": "Whether or not to use the legacy prediction_loop in the Trainer."},
     )
     push_to_hub: bool = field(
         default=False,
-        metadata={
-            "help": "Whether or not to upload the trained model to the model hub after training."
-        },
+        metadata={"help": "Whether or not to upload the trained model to the model hub after training."},
     )
     resume_from_checkpoint: Optional[str] = field(
         default=None,
-        metadata={
-            "help": "The path to a folder with a valid checkpoint for your model."
-        },
+        metadata={"help": "The path to a folder with a valid checkpoint for your model."},
     )
     hub_model_id: Optional[str] = field(
         default=None,
-        metadata={
-            "help": "The name of the repository to keep in sync with the local `output_dir`."
-        },
+        metadata={"help": "The name of the repository to keep in sync with the local `output_dir`."},
     )
     hub_strategy: Union[HubStrategy, str] = field(
         default="every_save",
         metadata={"help": "The hub strategy to use when `--push_to_hub` is activated."},
     )
-    hub_token: Optional[str] = field(
-        default=None, metadata={"help": "The token to use to push to the Model Hub."}
-    )
+    hub_token: Optional[str] = field(default=None, metadata={"help": "The token to use to push to the Model Hub."})
     hub_private_repo: Optional[bool] = field(
         default=None,
         metadata={
@@ -1493,9 +1419,7 @@ class TrainingArguments:
     )
     hub_always_push: bool = field(
         default=False,
-        metadata={
-            "help": "Unless `True`, the Trainer will skip pushes if the previous one wasn't finished yet."
-        },
+        metadata={"help": "Unless `True`, the Trainer will skip pushes if the previous one wasn't finished yet."},
     )
     gradient_checkpointing: bool = field(
         default=False,
@@ -1546,9 +1470,7 @@ class TrainingArguments:
     )
     push_to_hub_organization: Optional[str] = field(
         default=None,
-        metadata={
-            "help": "The name of the organization in with to which push the `Trainer`."
-        },
+        metadata={"help": "The name of the organization in with to which push the `Trainer`."},
     )
     push_to_hub_token: Optional[str] = field(
         default=None, metadata={"help": "The token to use to push to the Model Hub."}
@@ -1556,9 +1478,7 @@ class TrainingArguments:
     _n_gpu: int = field(init=False, repr=False, default=-1)
     mp_parameters: str = field(
         default="",
-        metadata={
-            "help": "Used by the SageMaker launcher to send mp-specific args. Ignored in Trainer"
-        },
+        metadata={"help": "Used by the SageMaker launcher to send mp-specific args. Ignored in Trainer"},
     )
 
     auto_find_batch_size: bool = field(
@@ -1606,9 +1526,7 @@ class TrainingArguments:
     )
     torch_compile: bool = field(
         default=False,
-        metadata={
-            "help": "If set to `True`, the model will be wrapped in `torch.compile`."
-        },
+        metadata={"help": "If set to `True`, the model will be wrapped in `torch.compile`."},
     )
     torch_compile_backend: Optional[str] = field(
         default=None,
@@ -1625,23 +1543,17 @@ class TrainingArguments:
 
     dispatch_batches: Optional[bool] = field(
         default=None,
-        metadata={
-            "help": "Deprecated. Pass {'dispatch_batches':VALUE} to `accelerator_config`."
-        },
+        metadata={"help": "Deprecated. Pass {'dispatch_batches':VALUE} to `accelerator_config`."},
     )
 
     split_batches: Optional[bool] = field(
         default=None,
-        metadata={
-            "help": "Deprecated. Pass {'split_batches':True} to `accelerator_config`."
-        },
+        metadata={"help": "Deprecated. Pass {'split_batches':True} to `accelerator_config`."},
     )
 
     include_tokens_per_second: Optional[bool] = field(
         default=False,
-        metadata={
-            "help": "If set to `True`, the speed metrics will include `tgs` (tokens per second per device)."
-        },
+        metadata={"help": "If set to `True`, the speed metrics will include `tgs` (tokens per second per device)."},
     )
 
     include_num_input_tokens_seen: Optional[bool] = field(
@@ -1667,9 +1579,7 @@ class TrainingArguments:
 
     batch_eval_metrics: bool = field(
         default=False,
-        metadata={
-            "help": "Break eval metrics calculation into batches to save memory."
-        },
+        metadata={"help": "Break eval metrics calculation into batches to save memory."},
     )
 
     eval_on_start: bool = field(
@@ -1681,9 +1591,7 @@ class TrainingArguments:
 
     use_liger_kernel: Optional[bool] = field(
         default=False,
-        metadata={
-            "help": "Whether or not to enable the Liger Kernel for model training."
-        },
+        metadata={"help": "Whether or not to enable the Liger Kernel for model training."},
     )
 
     eval_use_gather_object: Optional[bool] = field(
@@ -1768,22 +1676,15 @@ class TrainingArguments:
             self.do_eval = True
 
         if self.torch_empty_cache_steps is not None:
-            if not (
-                isinstance(self.torch_empty_cache_steps, int)
-                and self.torch_empty_cache_steps > 0
-            ):
+            if not (isinstance(self.torch_empty_cache_steps, int) and self.torch_empty_cache_steps > 0):
                 raise ValueError(
                     f"`torch_empty_cache_steps` must be an integer bigger than 0, got {self.torch_empty_cache_steps}."
                 )
 
         # eval_steps has to be defined and non-zero, fallbacks to logging_steps if the latter is non-zero
-        if self.eval_strategy == IntervalStrategy.STEPS and (
-            self.eval_steps is None or self.eval_steps == 0
-        ):
+        if self.eval_strategy == IntervalStrategy.STEPS and (self.eval_steps is None or self.eval_steps == 0):
             if self.logging_steps > 0:
-                logger.info(
-                    f"using `logging_steps` to initialize `eval_steps` to {self.logging_steps}"
-                )
+                logger.info(f"using `logging_steps` to initialize `eval_steps` to {self.logging_steps}")
                 self.eval_steps = self.logging_steps
             else:
                 raise ValueError(
@@ -1793,27 +1694,19 @@ class TrainingArguments:
 
         # logging_steps must be non-zero for logging_strategy that is other than 'no'
         if self.logging_strategy == IntervalStrategy.STEPS and self.logging_steps == 0:
-            raise ValueError(
-                f"logging strategy {self.logging_strategy} requires non-zero --logging_steps"
-            )
+            raise ValueError(f"logging strategy {self.logging_strategy} requires non-zero --logging_steps")
 
         if self.logging_strategy == IntervalStrategy.STEPS and self.logging_steps > 1:
             if self.logging_steps != int(self.logging_steps):
-                raise ValueError(
-                    f"--logging_steps must be an integer if bigger than 1: {self.logging_steps}"
-                )
+                raise ValueError(f"--logging_steps must be an integer if bigger than 1: {self.logging_steps}")
             self.logging_steps = int(self.logging_steps)
         if self.eval_strategy == IntervalStrategy.STEPS and self.eval_steps > 1:
             if self.eval_steps != int(self.eval_steps):
-                raise ValueError(
-                    f"--eval_steps must be an integer if bigger than 1: {self.eval_steps}"
-                )
+                raise ValueError(f"--eval_steps must be an integer if bigger than 1: {self.eval_steps}")
             self.eval_steps = int(self.eval_steps)
         if self.save_strategy == SaveStrategy.STEPS and self.save_steps > 1:
             if self.save_steps != int(self.save_steps):
-                raise ValueError(
-                    f"--save_steps must be an integer if bigger than 1: {self.save_steps}"
-                )
+                raise ValueError(f"--save_steps must be an integer if bigger than 1: {self.save_steps}")
             self.save_steps = int(self.save_steps)
 
         # Sanity checks for load_best_model_at_end: we require save and eval strategies to be compatible.
@@ -1823,10 +1716,7 @@ class TrainingArguments:
                     "--load_best_model_at_end requires the save and eval strategy to match, but found\n- Evaluation "
                     f"strategy: {self.eval_strategy}\n- Save strategy: {self.save_strategy}"
                 )
-            if (
-                self.eval_strategy == IntervalStrategy.STEPS
-                and self.save_steps % self.eval_steps != 0
-            ):
+            if self.eval_strategy == IntervalStrategy.STEPS and self.save_steps % self.eval_steps != 0:
                 if self.eval_steps < 1 or self.save_steps < 1:
                     if not (self.eval_steps < 1 and self.save_steps < 1):
                         raise ValueError(
@@ -1836,9 +1726,7 @@ class TrainingArguments:
                         )
                     # Work around floating point precision issues
                     LARGE_MULTIPLIER = 1_000_000
-                    if (self.save_steps * LARGE_MULTIPLIER) % (
-                        self.eval_steps * LARGE_MULTIPLIER
-                    ) != 0:
+                    if (self.save_steps * LARGE_MULTIPLIER) % (self.eval_steps * LARGE_MULTIPLIER) != 0:
                         raise ValueError(
                             "--load_best_model_at_end requires the saving steps to be a multiple of the evaluation "
                             f"steps, but found {self.save_steps}, which is not a multiple of {self.eval_steps}."
@@ -1850,9 +1738,7 @@ class TrainingArguments:
 
         safetensors_available = is_safetensors_available()
         if self.save_safetensors and not safetensors_available:
-            raise ValueError(
-                f"--save_safetensors={self.save_safetensors} requires safetensors to be installed!"
-            )
+            raise ValueError(f"--save_safetensors={self.save_safetensors} requires safetensors to be installed!")
         if not self.save_safetensors and safetensors_available:
             logger.info(
                 f"Found safetensors installation, but --save_safetensors={self.save_safetensors}. "
@@ -1862,8 +1748,7 @@ class TrainingArguments:
             )
 
         if (
-            self.load_best_model_at_end
-            or self.lr_scheduler_type == SchedulerType.REDUCE_ON_PLATEAU
+            self.load_best_model_at_end or self.lr_scheduler_type == SchedulerType.REDUCE_ON_PLATEAU
         ) and self.metric_for_best_model is None:
             self.metric_for_best_model = "loss"
         if self.greater_is_better is None and self.metric_for_best_model is not None:
@@ -1880,15 +1765,9 @@ class TrainingArguments:
                 self.half_precision_backend = self.fp16_backend
 
             if self.bf16 or self.bf16_full_eval:
-                if (
-                    self.use_cpu
-                    and not is_torch_bf16_cpu_available()
-                    and not is_torch_xla_available()
-                ):
+                if self.use_cpu and not is_torch_bf16_cpu_available() and not is_torch_xla_available():
                     # cpu
-                    raise ValueError(
-                        "Your setup doesn't support bf16/(cpu, tpu, neuroncore). You need torch>=1.10"
-                    )
+                    raise ValueError("Your setup doesn't support bf16/(cpu, tpu, neuroncore). You need torch>=1.10")
                 elif not self.use_cpu:
                     if torch.cuda.is_available() and not is_torch_bf16_gpu_available():
                         # gpu
@@ -1900,25 +1779,17 @@ class TrainingArguments:
             raise ValueError("At most one of fp16 and bf16 can be True, but not both")
 
         if self.fp16_full_eval and self.bf16_full_eval:
-            raise ValueError(
-                "At most one of fp16 and bf16 can be True for full eval, but not both"
-            )
+            raise ValueError("At most one of fp16 and bf16 can be True for full eval, but not both")
 
         if self.bf16:
             if self.half_precision_backend == "apex":
-                raise ValueError(
-                    " `--half_precision_backend apex`: GPU bf16 is not supported by apex."
-                )
+                raise ValueError(" `--half_precision_backend apex`: GPU bf16 is not supported by apex.")
 
         if self.lr_scheduler_type == SchedulerType.REDUCE_ON_PLATEAU:
             if self.eval_strategy == IntervalStrategy.NO:
-                raise ValueError(
-                    "lr_scheduler_type reduce_lr_on_plateau requires an eval strategy"
-                )
+                raise ValueError("lr_scheduler_type reduce_lr_on_plateau requires an eval strategy")
             if not is_torch_available():
-                raise ValueError(
-                    "lr_scheduler_type reduce_lr_on_plateau requires torch>=0.2.0"
-                )
+                raise ValueError("lr_scheduler_type reduce_lr_on_plateau requires torch>=0.2.0")
 
         self.optim = OptimizerNames(self.optim)
         if self.adafactor:
@@ -1929,21 +1800,11 @@ class TrainingArguments:
             )
             self.optim = OptimizerNames.ADAFACTOR
         if self.optim == OptimizerNames.ADAMW_TORCH_FUSED and is_torch_available():
-            if version.parse(
-                version.parse(torch.__version__).base_version
-            ) < version.parse("2.0.0"):
-                raise ValueError(
-                    "--optim adamw_torch_fused requires PyTorch 2.0 or higher"
-                )
+            if version.parse(version.parse(torch.__version__).base_version) < version.parse("2.0.0"):
+                raise ValueError("--optim adamw_torch_fused requires PyTorch 2.0 or higher")
             # there is a bug in fp16/AMP in pt-2.0.0
-            if (
-                version.parse(version.parse(torch.__version__).base_version)
-                == version.parse("2.0.0")
-                and self.fp16
-            ):
-                raise ValueError(
-                    "--optim adamw_torch_fused with --fp16 requires PyTorch>2.0"
-                )
+            if version.parse(version.parse(torch.__version__).base_version) == version.parse("2.0.0") and self.fp16:
+                raise ValueError("--optim adamw_torch_fused with --fp16 requires PyTorch>2.0")
 
         # We need to setup the accelerator config here *before* the first call to `self.device`
         if is_accelerate_available():
@@ -1951,9 +1812,7 @@ class TrainingArguments:
                 if self.accelerator_config is None:
                     self.accelerator_config = AcceleratorConfig()
                 elif isinstance(self.accelerator_config, dict):
-                    self.accelerator_config = AcceleratorConfig(
-                        **self.accelerator_config
-                    )
+                    self.accelerator_config = AcceleratorConfig(**self.accelerator_config)
                 # Check that a user didn't pass in the class instantiator
                 # such as `accelerator_config = AcceleratorConfig`
                 elif isinstance(self.accelerator_config, type):
@@ -1962,9 +1821,7 @@ class TrainingArguments:
                         "Please pass in a fully constructed `AcceleratorConfig` object instead."
                     )
                 else:
-                    self.accelerator_config = AcceleratorConfig.from_json_file(
-                        self.accelerator_config
-                    )
+                    self.accelerator_config = AcceleratorConfig.from_json_file(self.accelerator_config)
 
             if self.dispatch_batches is not None:
                 warnings.warn(
@@ -1996,9 +1853,7 @@ class TrainingArguments:
                     )
                     self.average_tokens_across_devices = False
             except ImportError as e:
-                logger.warning(
-                    f"Can not specify world size due to {e}. Turn average_tokens_across_devices to False."
-                )
+                logger.warning(f"Can not specify world size due to {e}. Turn average_tokens_across_devices to False.")
                 self.average_tokens_across_devices = False
 
         if self.torchdynamo is not None:
@@ -2008,10 +1863,7 @@ class TrainingArguments:
                 FutureWarning,
             )
             self.torch_compile_backend = self.torchdynamo
-        if (
-            self.torch_compile_mode is not None
-            or self.torch_compile_backend is not None
-        ) and not self.torch_compile:
+        if (self.torch_compile_mode is not None or self.torch_compile_backend is not None) and not self.torch_compile:
             self.torch_compile = True
         if self.torch_compile and self.torch_compile_backend is None:
             if not self.use_cpu and is_torch_hpu_available():
@@ -2046,9 +1898,7 @@ class TrainingArguments:
                     torch.backends.cuda.matmul.allow_tf32 = True
                     torch.backends.cudnn.allow_tf32 = True
                 else:
-                    raise ValueError(
-                        "--tf32 requires Ampere or a newer GPU arch, cuda>=11 and torch>=1.7"
-                    )
+                    raise ValueError("--tf32 requires Ampere or a newer GPU arch, cuda>=11 and torch>=1.7")
             else:
                 if is_torch_tf32_available():
                     torch.backends.cuda.matmul.allow_tf32 = False
@@ -2097,9 +1947,7 @@ class TrainingArguments:
             )
 
         if not isinstance(self.warmup_steps, int) or self.warmup_steps < 0:
-            raise ValueError(
-                "warmup_steps must be of type int and must be 0 or a positive integer."
-            )
+            raise ValueError("warmup_steps must be of type int and must be 0 or a positive integer.")
 
         if isinstance(self.fsdp, bool):
             self.fsdp = [FSDPOption.FULL_SHARD] if self.fsdp else ""
@@ -2110,12 +1958,8 @@ class TrainingArguments:
                 "`--fsdp offload` can't work on its own. It needs to be added to `--fsdp full_shard` or "
                 '`--fsdp shard_grad_op`. For example, `--fsdp "full_shard offload"`.'
             )
-        elif (
-            FSDPOption.FULL_SHARD in self.fsdp and FSDPOption.SHARD_GRAD_OP in self.fsdp
-        ):
-            raise ValueError(
-                "`--fsdp full_shard` is not compatible with `--fsdp shard_grad_op`."
-            )
+        elif FSDPOption.FULL_SHARD in self.fsdp and FSDPOption.SHARD_GRAD_OP in self.fsdp:
+            raise ValueError("`--fsdp full_shard` is not compatible with `--fsdp shard_grad_op`.")
 
         if self.gradient_checkpointing and (
             FSDPOption.FULL_SHARD in self.fsdp or FSDPOption.HYBRID_SHARD in self.fsdp
@@ -2131,9 +1975,7 @@ class TrainingArguments:
 
         if isinstance(self.fsdp_config, str):
             if len(self.fsdp) == 0:
-                warnings.warn(
-                    "`--fsdp_config` is useful only when `--fsdp` is specified."
-                )
+                warnings.warn("`--fsdp_config` is useful only when `--fsdp` is specified.")
             with io.open(self.fsdp_config, "r", encoding="utf-8") as f:
                 self.fsdp_config = json.load(f)
                 for k in list(self.fsdp_config.keys()):
@@ -2147,15 +1989,11 @@ class TrainingArguments:
                 FutureWarning,
             )
 
-        self.fsdp_config["min_num_params"] = max(
-            self.fsdp_config.get("min_num_params", 0), self.fsdp_min_num_params
-        )
+        self.fsdp_config["min_num_params"] = max(self.fsdp_config.get("min_num_params", 0), self.fsdp_min_num_params)
 
         # if fsdp_config["transformer_layer_cls_to_wrap"] is specified as a string, convert it to a list with a single object
         if isinstance(self.fsdp_config.get("transformer_layer_cls_to_wrap", None), str):
-            self.fsdp_config["transformer_layer_cls_to_wrap"] = [
-                self.fsdp_config["transformer_layer_cls_to_wrap"]
-            ]
+            self.fsdp_config["transformer_layer_cls_to_wrap"] = [self.fsdp_config["transformer_layer_cls_to_wrap"]]
 
         if self.fsdp_transformer_layer_cls_to_wrap is not None:
             warnings.warn(
@@ -2169,50 +2007,33 @@ class TrainingArguments:
         if len(self.fsdp) == 0 and self.fsdp_config["min_num_params"] > 0:
             warnings.warn("`min_num_params` is useful only when `--fsdp` is specified.")
 
-        if (
-            len(self.fsdp) == 0
-            and self.fsdp_config.get("transformer_layer_cls_to_wrap", None) is not None
-        ):
-            warnings.warn(
-                "`transformer_layer_cls_to_wrap` is useful only when `--fsdp` is specified."
-            )
+        if len(self.fsdp) == 0 and self.fsdp_config.get("transformer_layer_cls_to_wrap", None) is not None:
+            warnings.warn("`transformer_layer_cls_to_wrap` is useful only when `--fsdp` is specified.")
 
         if (
             len(self.fsdp) > 0
             and self.fsdp_config["min_num_params"] > 0
             and self.fsdp_config.get("transformer_layer_cls_to_wrap", None) is not None
         ):
-            raise ValueError(
-                "`min_num_params` and `transformer_layer_cls_to_wrap` are mutually exclusive."
-            )
+            raise ValueError("`min_num_params` and `transformer_layer_cls_to_wrap` are mutually exclusive.")
         self.fsdp_config["xla"] = self.fsdp_config.get("xla", False)
         self.fsdp_config["xla_fsdp_v2"] = self.fsdp_config.get("xla_fsdp_v2", False)
-        self.fsdp_config["xla_fsdp_grad_ckpt"] = self.fsdp_config.get(
-            "xla_fsdp_grad_ckpt", False
-        )
+        self.fsdp_config["xla_fsdp_grad_ckpt"] = self.fsdp_config.get("xla_fsdp_grad_ckpt", False)
         if self.fsdp_config["xla"]:
             if len(self.fsdp) > 0:
                 # store XLA fsdp configuration parameters into a dictionary
                 # Copy the config to avoid modifying the original config (which may be used for JSON serialization)
-                self.xla_fsdp_config = self.fsdp_config.get(
-                    "xla_fsdp_settings", {}
-                ).copy()
+                self.xla_fsdp_config = self.fsdp_config.get("xla_fsdp_settings", {}).copy()
                 # apply appropriate string to torch.dtype conversions for parameters
                 if "compute_dtype" in self.xla_fsdp_config:
-                    self.xla_fsdp_config["compute_dtype"] = getattr(
-                        torch, self.xla_fsdp_config["compute_dtype"]
-                    )
+                    self.xla_fsdp_config["compute_dtype"] = getattr(torch, self.xla_fsdp_config["compute_dtype"])
                 if "buffer_dtype" in self.xla_fsdp_config:
-                    self.xla_fsdp_config["buffer_dtype"] = getattr(
-                        torch, self.xla_fsdp_config["buffer_dtype"]
-                    )
+                    self.xla_fsdp_config["buffer_dtype"] = getattr(torch, self.xla_fsdp_config["buffer_dtype"])
             else:
                 warnings.warn("XLA FSDP can be used only when `--fsdp` is specified.")
         else:
             if self.fsdp_config["xla_fsdp_grad_ckpt"]:
-                warnings.warn(
-                    "`--xla_fsdp_grad_ckpt` is useful only when `--xla` is set to true."
-                )
+                warnings.warn("`--xla_fsdp_grad_ckpt` is useful only when `--xla` is set to true.")
 
         if self.tp_size > 1:
             if not is_accelerate_available("1.3.1"):
@@ -2242,45 +2063,28 @@ class TrainingArguments:
                 elif fsdp_option == FSDPOption.AUTO_WRAP:
                     os.environ[f"{prefix}AUTO_WRAP_POLICY"] = FSDP_AUTO_WRAP_POLICY[0]
                     if self.fsdp_config["min_num_params"] > 0:
-                        os.environ[f"{prefix}MIN_NUM_PARAMS"] = str(
-                            self.fsdp_config["min_num_params"]
-                        )
-                        os.environ[f"{prefix}AUTO_WRAP_POLICY"] = FSDP_AUTO_WRAP_POLICY[
-                            1
-                        ]
-                    elif (
-                        self.fsdp_config.get("transformer_layer_cls_to_wrap", None)
-                        is not None
-                    ):
+                        os.environ[f"{prefix}MIN_NUM_PARAMS"] = str(self.fsdp_config["min_num_params"])
+                        os.environ[f"{prefix}AUTO_WRAP_POLICY"] = FSDP_AUTO_WRAP_POLICY[1]
+                    elif self.fsdp_config.get("transformer_layer_cls_to_wrap", None) is not None:
                         os.environ[f"{prefix}TRANSFORMER_CLS_TO_WRAP"] = ",".join(
                             self.fsdp_config["transformer_layer_cls_to_wrap"]
                         )
             prefetch_policy = self.fsdp_config.get("backward_prefetch", "NO_PREFETCH")
             os.environ[f"{prefix}BACKWARD_PREFETCH"] = prefetch_policy.upper()
-            os.environ[f"{prefix}FORWARD_PREFETCH"] = str(
-                self.fsdp_config.get("forward_prefetch", "false")
-            ).lower()
+            os.environ[f"{prefix}FORWARD_PREFETCH"] = str(self.fsdp_config.get("forward_prefetch", "false")).lower()
 
-            sync_module_states = str(
-                self.fsdp_config.get("sync_module_states", "true")
-            ).lower()
-            cpu_ram_efficient_loading = str(
-                self.fsdp_config.get("cpu_ram_efficient_loading", "false")
-            ).lower()
+            sync_module_states = str(self.fsdp_config.get("sync_module_states", "true")).lower()
+            cpu_ram_efficient_loading = str(self.fsdp_config.get("cpu_ram_efficient_loading", "false")).lower()
 
             if sync_module_states == "false" and cpu_ram_efficient_loading == "true":
                 # In this case, all the processes except the main process would have random weights leading
                 # to unexpected behaviour during training, thus throwing error here to prevent it.
-                raise ValueError(
-                    '`sync_module_states` must be `"True"` if `cpu_ram_efficient_loading` is `"True"`'
-                )
+                raise ValueError('`sync_module_states` must be `"True"` if `cpu_ram_efficient_loading` is `"True"`')
 
             os.environ[f"{prefix}SYNC_MODULE_STATES"] = sync_module_states
             os.environ[f"{prefix}CPU_RAM_EFFICIENT_LOADING"] = cpu_ram_efficient_loading
 
-            os.environ[f"{prefix}USE_ORIG_PARAMS"] = str(
-                self.fsdp_config.get("use_orig_params", "true")
-            ).lower()
+            os.environ[f"{prefix}USE_ORIG_PARAMS"] = str(self.fsdp_config.get("use_orig_params", "true")).lower()
 
         if self.tpu_metrics_debug:
             warnings.warn(
@@ -2318,9 +2122,7 @@ class TrainingArguments:
             from accelerate.utils import DeepSpeedPlugin
 
             os.environ["ACCELERATE_USE_DEEPSPEED"] = "true"
-            self.deepspeed_plugin = DeepSpeedPlugin(
-                hf_ds_config=self.hf_deepspeed_config
-            )
+            self.deepspeed_plugin = DeepSpeedPlugin(hf_ds_config=self.hf_deepspeed_config)
         elif strtobool(os.environ.get("ACCELERATE_USE_DEEPSPEED", "false")):
             # Accelerate DeepSpeed Plugin
             from accelerate.utils import DeepSpeedPlugin
@@ -2333,10 +2135,7 @@ class TrainingArguments:
         if self.use_cpu:
             self.dataloader_pin_memory = False
 
-        if (
-            self.dataloader_num_workers == 0
-            and self.dataloader_prefetch_factor is not None
-        ):
+        if self.dataloader_num_workers == 0 and self.dataloader_prefetch_factor is not None:
             raise ValueError(
                 "--dataloader_prefetch_factor can only be set when data is loaded in a different process, i.e."
                 " when --dataloader_num_workers > 1."
@@ -2371,9 +2170,7 @@ class TrainingArguments:
                     FutureWarning,
                 )
         elif self.push_to_hub_organization is not None:
-            self.hub_model_id = (
-                f"{self.push_to_hub_organization}/{Path(self.output_dir).name}"
-            )
+            self.hub_model_id = f"{self.push_to_hub_organization}/{Path(self.output_dir).name}"
             warnings.warn(
                 "`--push_to_hub_organization` is deprecated and will be removed in version 5 of 🤗 Transformers. Use "
                 "`--hub_model_id` instead and pass the full repo name to this argument (in this case "
@@ -2408,10 +2205,7 @@ class TrainingArguments:
         del self_as_dict["per_gpu_train_batch_size"]
         del self_as_dict["per_gpu_eval_batch_size"]
 
-        self_as_dict = {
-            k: f"<{k.upper()}>" if k.endswith("_token") else v
-            for k, v in self_as_dict.items()
-        }
+        self_as_dict = {k: f"<{k.upper()}>" if k.endswith("_token") else v for k, v in self_as_dict.items()}
 
         attrs_as_str = [f"{k}={v},\n" for k, v in sorted(self_as_dict.items())]
         return f"{self.__class__.__name__}(\n{''.join(attrs_as_str)})"
@@ -2428,9 +2222,7 @@ class TrainingArguments:
                 "Using deprecated `--per_gpu_train_batch_size` argument which will be removed in a future "
                 "version. Using `--per_device_train_batch_size` is preferred."
             )
-        per_device_batch_size = (
-            self.per_gpu_train_batch_size or self.per_device_train_batch_size
-        )
+        per_device_batch_size = self.per_gpu_train_batch_size or self.per_device_train_batch_size
         train_batch_size = per_device_batch_size * max(1, self.n_gpu)
         return train_batch_size
 
@@ -2444,9 +2236,7 @@ class TrainingArguments:
                 "Using deprecated `--per_gpu_eval_batch_size` argument which will be removed in a future "
                 "version. Using `--per_device_eval_batch_size` is preferred."
             )
-        per_device_batch_size = (
-            self.per_gpu_eval_batch_size or self.per_device_eval_batch_size
-        )
+        per_device_batch_size = self.per_gpu_eval_batch_size or self.per_device_eval_batch_size
         eval_batch_size = per_device_batch_size * max(1, self.n_gpu)
         return eval_batch_size
 
@@ -2470,8 +2260,8 @@ class TrainingArguments:
         # We delay the init of `PartialState` to the end for clarity
         accelerator_state_kwargs = {"enabled": True, "use_configured_state": False}
         if isinstance(self.accelerator_config, AcceleratorConfig):
-            accelerator_state_kwargs["use_configured_state"] = (
-                self.accelerator_config.pop("use_configured_state", False)
+            accelerator_state_kwargs["use_configured_state"] = self.accelerator_config.pop(
+                "use_configured_state", False
             )
         if accelerator_state_kwargs["use_configured_state"]:
             if PartialState._shared_state == {}:
@@ -2481,10 +2271,7 @@ class TrainingArguments:
                 )
             # We rely on `PartialState` to yell if there's issues here (which it will)
             self.distributed_state = PartialState(cpu=self.use_cpu)
-            if (
-                self.deepspeed
-                and self.distributed_state.distributed_type != DistributedType.DEEPSPEED
-            ):
+            if self.deepspeed and self.distributed_state.distributed_type != DistributedType.DEEPSPEED:
                 raise RuntimeError(
                     "Tried to use an already configured `Accelerator` or `PartialState` that was not initialized for DeepSpeed, "
                     "but also passed in a `deepspeed` configuration to the `TrainingArguments`. Please set "
@@ -2516,9 +2303,9 @@ class TrainingArguments:
             accelerator_state_kwargs["timeout"] = timedelta(seconds=self.ddp_timeout)
 
         # Now we pop everything
-        if accelerator_state_kwargs.pop(
-            "enabled", False
-        ) and not accelerator_state_kwargs.pop("use_configured_state", False):
+        if accelerator_state_kwargs.pop("enabled", False) and not accelerator_state_kwargs.pop(
+            "use_configured_state", False
+        ):
             # We need to patch this env var when enabling to detect deepspeed
             use_deepspeed = accelerator_state_kwargs.pop("use_deepspeed", False)
             if use_deepspeed:
@@ -2529,11 +2316,7 @@ class TrainingArguments:
         if not is_sagemaker_mp_enabled():
             device = self.distributed_state.device
             self.local_rank = self.distributed_state.local_process_index
-        if (
-            dist.is_available()
-            and dist.is_initialized()
-            and self.parallel_mode != ParallelMode.DISTRIBUTED
-        ):
+        if dist.is_available() and dist.is_initialized() and self.parallel_mode != ParallelMode.DISTRIBUTED:
             logger.warning(
                 "torch.distributed process group is initialized, but parallel_mode != ParallelMode.DISTRIBUTED. "
                 "In order to use Torch DDP, launch your script with `python -m torch.distributed.launch"
@@ -2561,12 +2344,8 @@ class TrainingArguments:
             elif is_torch_mps_available():
                 device = torch.device("mps")
             elif is_torch_xpu_available():
-                if not is_ipex_available() and not is_accelerate_available(
-                    "0.32.0.dev"
-                ):
-                    raise ImportError(
-                        "Using the XPU PyTorch backend requires `accelerate>=0.32.0.dev`"
-                    )
+                if not is_ipex_available() and not is_accelerate_available("0.32.0.dev"):
+                    raise ImportError("Using the XPU PyTorch backend requires `accelerate>=0.32.0.dev`")
                 device = torch.device("xpu:0")
                 torch.xpu.set_device(device)
             elif is_torch_mlu_available():
@@ -2589,9 +2368,7 @@ class TrainingArguments:
                 # GPUs available in the environment, so `CUDA_VISIBLE_DEVICES=1,2` with `cuda:0`
                 # will use the first GPU in that env, i.e. GPU#1
                 device = torch.device(
-                    "cuda:0"
-                    if torch.cuda.is_available()
-                    else os.environ.get("ACCELERATE_TORCH_DEVICE", "cpu")
+                    "cuda:0" if torch.cuda.is_available() else os.environ.get("ACCELERATE_TORCH_DEVICE", "cpu")
                 )
                 # Sometimes the line in the postinit has not been run before we end up here, so just checking we're not at
                 # the default value.
@@ -2642,8 +2419,7 @@ class TrainingArguments:
         elif is_sagemaker_dp_enabled():
             return ParallelMode.SAGEMAKER_DATA_PARALLEL
         elif (
-            self.distributed_state is not None
-            and self.distributed_state.distributed_type != DistributedType.NO
+            self.distributed_state is not None and self.distributed_state.distributed_type != DistributedType.NO
         ) or (self.distributed_state is None and self.local_rank != -1):
             return ParallelMode.DISTRIBUTED
         elif self.n_gpu > 1:
@@ -2660,9 +2436,7 @@ class TrainingArguments:
         if self.distributed_state is not None:
             return self.distributed_state.num_processes
         elif is_sagemaker_mp_enabled():
-            return (
-                smp.dp_size() if not smp.state.cfg.prescaled_batch else smp.rdp_size()
-            )
+            return smp.dp_size() if not smp.state.cfg.prescaled_batch else smp.rdp_size()
         return 1
 
     @property
@@ -2674,9 +2448,7 @@ class TrainingArguments:
         if self.distributed_state is not None:
             return self.distributed_state.process_index
         elif is_sagemaker_mp_enabled():
-            return (
-                smp.dp_rank() if not smp.state.cfg.prescaled_batch else smp.rdp_rank()
-            )
+            return smp.dp_rank() if not smp.state.cfg.prescaled_batch else smp.rdp_rank()
         return 0
 
     @property
@@ -2737,9 +2509,7 @@ class TrainingArguments:
         log_level_replica = trainer_log_levels[self.log_level_replica]
 
         log_level_main_node = logging.get_verbosity() if log_level == -1 else log_level
-        log_level_replica_node = (
-            logging.get_verbosity() if log_level_replica == -1 else log_level_replica
-        )
+        log_level_replica_node = logging.get_verbosity() if log_level_replica == -1 else log_level_replica
         return log_level_main_node if self.should_log else log_level_replica_node
 
     @property
@@ -2755,10 +2525,7 @@ class TrainingArguments:
         Whether or not to use no_sync for the gradients when doing gradient accumulation.
         """
         return not (
-            self.deepspeed
-            or is_sagemaker_dp_enabled()
-            or is_sagemaker_mp_enabled()
-            or is_torch_neuroncore_available()
+            self.deepspeed or is_sagemaker_dp_enabled() or is_sagemaker_mp_enabled() or is_torch_neuroncore_available()
         )
 
     @contextlib.contextmanager
@@ -2786,9 +2553,7 @@ class TrainingArguments:
             main_process_desc = "main local process" if local else "main process"
             if self.distributed_state is not None:
                 is_main_process = (
-                    self.distributed_state.is_local_main_process
-                    if local
-                    else self.distributed_state.is_main_process
+                    self.distributed_state.is_local_main_process if local else self.distributed_state.is_main_process
                 )
             elif is_sagemaker_mp_enabled():
                 is_main_process = smp.rank() == 0
@@ -2796,9 +2561,7 @@ class TrainingArguments:
             try:
                 if not is_main_process:
                     # tell all replicas to wait
-                    logger.debug(
-                        f"{self.process_index}: waiting for the {main_process_desc} to perform {desc}"
-                    )
+                    logger.debug(f"{self.process_index}: waiting for the {main_process_desc} to perform {desc}")
 
                     if is_torch_xla_available():
                         xm.rendezvous(desc)
@@ -2808,9 +2571,7 @@ class TrainingArguments:
             finally:
                 if is_main_process:
                     # the wait is over
-                    logger.debug(
-                        f"{self.process_index}: {main_process_desc} completed {desc}, releasing all replicas"
-                    )
+                    logger.debug(f"{self.process_index}: {main_process_desc} completed {desc}, releasing all replicas")
                     if is_torch_xla_available():
                         xm.rendezvous(desc)
                     else:
@@ -2823,9 +2584,7 @@ class TrainingArguments:
         Get number of steps used for a linear warmup.
         """
         warmup_steps = (
-            self.warmup_steps
-            if self.warmup_steps > 0
-            else math.ceil(num_training_steps * self.warmup_ratio)
+            self.warmup_steps if self.warmup_steps > 0 else math.ceil(num_training_steps * self.warmup_ratio)
         )
         return warmup_steps
 
@@ -2835,9 +2594,7 @@ class TrainingArguments:
         converts torch.dtype to a string of just the type. For example, `torch.float32` get converted into *"float32"*
         string, which can then be stored in the json format.
         """
-        if d.get("torch_dtype", None) is not None and not isinstance(
-            d["torch_dtype"], str
-        ):
+        if d.get("torch_dtype", None) is not None and not isinstance(d["torch_dtype"], str):
             d["torch_dtype"] = str(d["torch_dtype"]).split(".")[1]
         for value in d.values():
             if isinstance(value, dict):
@@ -2849,11 +2606,7 @@ class TrainingArguments:
         the token values by removing their value.
         """
         # filter out fields that are defined as field(init=False)
-        d = {
-            field.name: getattr(self, field.name)
-            for field in fields(self)
-            if field.init
-        }
+        d = {field.name: getattr(self, field.name) for field in fields(self) if field.init}
 
         for k, v in d.items():
             if isinstance(v, Enum):
@@ -3021,9 +2774,7 @@ class TrainingArguments:
         """
         self.eval_strategy = IntervalStrategy(strategy)
         if self.eval_strategy == IntervalStrategy.STEPS and steps == 0:
-            raise ValueError(
-                "Setting `strategy` as 'steps' requires a positive value for `steps`."
-            )
+            raise ValueError("Setting `strategy` as 'steps' requires a positive value for `steps`.")
         self.do_eval = self.eval_strategy != IntervalStrategy.NO
         self.eval_steps = steps
         self.per_device_eval_batch_size = batch_size
@@ -3116,9 +2867,7 @@ class TrainingArguments:
         """
         self.save_strategy = SaveStrategy(strategy)
         if self.save_strategy == SaveStrategy.STEPS and steps == 0:
-            raise ValueError(
-                "Setting `strategy` as 'steps' requires a positive value for `steps`."
-            )
+            raise ValueError("Setting `strategy` as 'steps' requires a positive value for `steps`.")
         self.save_steps = steps
         self.save_total_limit = total_limit
         self.save_on_each_node = on_each_node
@@ -3189,9 +2938,7 @@ class TrainingArguments:
         """
         self.logging_strategy = IntervalStrategy(strategy)
         if self.logging_strategy == IntervalStrategy.STEPS and steps == 0:
-            raise ValueError(
-                "Setting `strategy` as 'steps' requires a positive value for `steps`."
-            )
+            raise ValueError("Setting `strategy` as 'steps' requires a positive value for `steps`.")
         self.logging_steps = steps
         self.report_to = report_to
         self.log_level = level
