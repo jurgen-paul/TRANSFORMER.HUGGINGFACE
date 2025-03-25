@@ -345,6 +345,10 @@ _import_structure = {
     ],
     "models.deberta_v2": ["DebertaV2Config"],
     "models.decision_transformer": ["DecisionTransformerConfig"],
+    "models.deepseek_vl": [
+        "DeepseekVLConfig",
+        "DeepseekVLProcessor",
+    ],
     "models.deformable_detr": ["DeformableDetrConfig"],
     "models.deit": ["DeiTConfig"],
     "models.deprecated": [],
@@ -1259,6 +1263,7 @@ else:
         ["ConditionalDetrFeatureExtractor", "ConditionalDetrImageProcessor"]
     )
     _import_structure["models.convnext"].extend(["ConvNextFeatureExtractor", "ConvNextImageProcessor"])
+    _import_structure["models.deepseek_vl"].append("DeepseekVLImageProcessor")
     _import_structure["models.deformable_detr"].extend(
         ["DeformableDetrFeatureExtractor", "DeformableDetrImageProcessor"]
     )
@@ -1346,6 +1351,7 @@ else:
     _import_structure["models.blip"].append("BlipImageProcessorFast")
     _import_structure["models.clip"].append("CLIPImageProcessorFast")
     _import_structure["models.convnext"].append("ConvNextImageProcessorFast")
+    _import_structure["models.deepseek_vl"].append("DeepseekVLImageProcessorFast")
     _import_structure["models.deformable_detr"].append("DeformableDetrImageProcessorFast")
     _import_structure["models.deit"].append("DeiTImageProcessorFast")
     _import_structure["models.depth_pro"].append("DepthProImageProcessorFast")
@@ -2717,6 +2723,13 @@ else:
             "JambaForSequenceClassification",
             "JambaModel",
             "JambaPreTrainedModel",
+        ]
+    )
+    _import_structure["models.deepseek_vl"].extend(
+        [
+            "DeepseekVLForConditionalGeneration",
+            "DeepseekVLModel",
+            "DeepseekVLPreTrainedModel",
         ]
     )
     _import_structure["models.jetmoe"].extend(
@@ -5545,6 +5558,10 @@ if TYPE_CHECKING:
     from .models.decision_transformer import (
         DecisionTransformerConfig,
     )
+    from .models.deepseek_vl import (
+        DeepseekVLConfig,
+        DeepseekVLProcessor,
+    )
     from .models.deformable_detr import (
         DeformableDetrConfig,
     )
@@ -6503,6 +6520,7 @@ if TYPE_CHECKING:
             ConditionalDetrImageProcessor,
         )
         from .models.convnext import ConvNextFeatureExtractor, ConvNextImageProcessor
+        from .models.deepseek_vl import DeepseekVLImageProcessor
         from .models.deformable_detr import DeformableDetrFeatureExtractor, DeformableDetrImageProcessor
         from .models.deit import DeiTFeatureExtractor, DeiTImageProcessor
         from .models.deprecated.deta import DetaImageProcessor
@@ -6604,6 +6622,7 @@ if TYPE_CHECKING:
         from .models.blip import BlipImageProcessorFast
         from .models.clip import CLIPImageProcessorFast
         from .models.convnext import ConvNextImageProcessorFast
+        from .models.deepseek_vl import DeepseekVLImageProcessorFast
         from .models.deformable_detr import DeformableDetrImageProcessorFast
         from .models.deit import DeiTImageProcessorFast
         from .models.depth_pro import DepthProImageProcessorFast
@@ -7173,6 +7192,11 @@ if TYPE_CHECKING:
             DecisionTransformerGPT2PreTrainedModel,
             DecisionTransformerModel,
             DecisionTransformerPreTrainedModel,
+        )
+        from .models.deepseek_vl import (
+            DeepseekVLForConditionalGeneration,
+            DeepseekVLModel,
+            DeepseekVLPreTrainedModel,
         )
         from .models.deformable_detr import (
             DeformableDetrForObjectDetection,
