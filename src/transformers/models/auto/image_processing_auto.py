@@ -638,3 +638,6 @@ class AutoImageProcessor:
         IMAGE_PROCESSOR_MAPPING.register(
             config_class, (slow_image_processor_class, fast_image_processor_class), exist_ok=exist_ok
         )
+
+
+__all__ = ["IMAGE_PROCESSOR_MAPPING", "AutoImageProcessor"]

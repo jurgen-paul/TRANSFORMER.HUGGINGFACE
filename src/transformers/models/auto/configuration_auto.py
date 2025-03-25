@@ -1152,3 +1152,6 @@ class AutoConfig:
                 "match!"
             )
         CONFIG_MAPPING.register(model_type, config, exist_ok=exist_ok)
+
+
+__all__ = ["CONFIG_MAPPING", "MODEL_NAMES_MAPPING", "AutoConfig"]

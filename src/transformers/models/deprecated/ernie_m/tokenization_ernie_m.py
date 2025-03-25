@@ -403,3 +403,6 @@ class ErnieMTokenizer(PreTrainedTokenizer):
             fi.write(content_spiece_model)
 
         return (vocab_file,)
+
+
+__all__ = ["ErnieMTokenizer"]

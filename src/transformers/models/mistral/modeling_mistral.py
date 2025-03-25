@@ -1154,3 +1154,13 @@ class MistralForQuestionAnswering(MistralPreTrainedModel):
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
+
+
+__all__ = [
+    "MistralForCausalLM",
+    "MistralForQuestionAnswering",
+    "MistralModel",
+    "MistralPreTrainedModel",
+    "MistralForSequenceClassification",
+    "MistralForTokenClassification",
+]

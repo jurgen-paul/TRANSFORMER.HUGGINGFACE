@@ -132,3 +132,12 @@ class Qwen2ForTokenClassification(LlamaForTokenClassification):
 
 class Qwen2ForQuestionAnswering(LlamaForQuestionAnswering):
     pass
+
+
+__all__ = [
+    "Qwen2Model",
+    "Qwen2ForCausalLM",
+    "Qwen2ForSequenceClassification",
+    "Qwen2ForTokenClassification",
+    "Qwen2ForQuestionAnswering",
+]
